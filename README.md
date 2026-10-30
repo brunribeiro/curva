@@ -13,9 +13,13 @@ npx shadcn@latest add <registry-url>/r/gauge-chart.json
 npx shadcn@latest add <registry-url>/r/polar-bar-chart.json
 npx shadcn@latest add <registry-url>/r/heatmap-chart.json
 npx shadcn@latest add <registry-url>/r/split-bar.json
+npx shadcn@latest add <registry-url>/r/flow-chart.json
+npx shadcn@latest add <registry-url>/r/capsule-bar-chart.json
+npx shadcn@latest add <registry-url>/r/dot-matrix-chart.json
+npx shadcn@latest add <registry-url>/r/range-histogram.json
 ```
 
-Each chart adds its own file to `components/ui/` plus the shared `components/ui/chart-parts.tsx` and `lib/curva.ts`. Every chart depends on `motion`. The area, donut, radial, gauge and polar bar charts also need `d3-shape`.
+Each chart adds its own file to `components/ui/` plus the shared `components/ui/chart-parts.tsx` and `lib/curva.ts`. Every chart depends on `motion`. The area, donut, radial, gauge, polar bar and flow charts also need `d3-shape`.
 
 ## Area chart
 
@@ -140,6 +144,54 @@ import { SplitBar } from "@/components/ui/split-bar"
 ```
 
 A share-of-total bar woven from thin ticks, each part marked by a taller leading tick and a label. The ticks rise like an equalizer and regroup when values change. Pointing at a part shows its value, and labels too narrow to fit appear on demand.
+
+## Flow chart
+
+```tsx
+import { FlowChart } from "@/components/ui/flow-chart"
+
+<FlowChart
+  data={quarters}
+  index="quarter"
+  series={[
+    { key: "dineIn", label: "Dine-in" },
+    { key: "delivery", label: "Delivery" },
+  ]}
+  label="Revenue by channel"
+/>
+```
+
+Bands that flow through stages from left to right, stacked around the middle and washing in from a narrow lead on the left edge. Each stage gets a marker and a pill with its total. The flow pours in once. After that, new values reshape the bands in a wave, and a new set of bands or stages swaps in directly. Pointing at a band quiets the others, and the nearest stage shows every value in a tooltip.
+
+## Capsule bar chart
+
+```tsx
+import { CapsuleBarChart } from "@/components/ui/capsule-bar-chart"
+
+<CapsuleBarChart data={days} index="day" value="ticket" label="Average ticket" />
+```
+
+Glass capsules filled with liquid that rises with a little slosh. One capsule glows in a gradient from `color` up to `accent`: the active one, or the `highlight` (`"max"` by default, `"last"` or an index) while nothing is active. Its value rides on top in a pill.
+
+## Dot matrix chart
+
+```tsx
+import { DotMatrixChart } from "@/components/ui/dot-matrix-chart"
+
+<DotMatrixChart data={months} index="month" value="members" label="Members" />
+```
+
+An area chart drawn in dots: each column fills bottom up to its value (`rows`, default 12), capped by a brighter dot so the line reads through the matrix. Columns warm up one after another, and changes ripple out from each column's new top.
+
+## Range histogram
+
+```tsx
+import { RangeHistogram } from "@/components/ui/range-histogram"
+
+<RangeHistogram data={days} index="day" value="revenue" label="Daily revenue" onRangeChange={(range, points) => {}} />
+```
+
+A dense histogram with a brush. Sweep across the bars to pick a range, drag the window to move it, or drag either handle. The handles are sliders, so arrow keys move them (Shift for 5, Page Up and Page Down for a tenth). A summary rides above the window with the range's total and its change from first to last. `defaultRange` sets the starting selection, and `onRangeChange` reports each change with the selected points.
 
 ## Motion and reduced motion
 

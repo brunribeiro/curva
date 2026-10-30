@@ -178,3 +178,60 @@ export const expenses: Record<GoalMonth, ExpensePoint[]> = {
     { item: "Utilities", amount: 2100, color: "var(--chart-5)" },
   ],
 }
+
+export type ChannelStage = { quarter: string; dineIn: number; delivery: number; pickup: number }
+
+export const channelFlow: Record<"2025" | "2026", ChannelStage[]> = {
+  "2025": [
+    { quarter: "Q1", dineIn: 41200, delivery: 18600, pickup: 9800 },
+    { quarter: "Q2", dineIn: 45800, delivery: 22400, pickup: 11200 },
+    { quarter: "Q3", dineIn: 43100, delivery: 27900, pickup: 12600 },
+    { quarter: "Q4", dineIn: 49600, delivery: 31800, pickup: 14100 },
+  ],
+  "2026": [
+    { quarter: "Q1", dineIn: 44800, delivery: 29600, pickup: 13900 },
+    { quarter: "Q2", dineIn: 47200, delivery: 36400, pickup: 16800 },
+    { quarter: "Q3", dineIn: 45900, delivery: 44100, pickup: 19200 },
+    { quarter: "Q4", dineIn: 52300, delivery: 51800, pickup: 22600 },
+  ],
+}
+
+export type TicketPoint = { day: string; ticket: number }
+
+const ticketDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+
+export const tickets: Record<"lunch" | "dinner", TicketPoint[]> = {
+  lunch: [18.4, 17.9, 19.2, 20.1, 22.6, 26.8, 24.3].map((ticket, i) => ({
+    day: ticketDays[i],
+    ticket,
+  })),
+  dinner: [31.2, 29.8, 32.4, 34.9, 41.7, 46.2, 38.5].map((ticket, i) => ({
+    day: ticketDays[i],
+    ticket,
+  })),
+}
+
+export type GrowthPoint = { month: string; members: number; app: number }
+
+export const growth: GrowthPoint[] = Array.from({ length: 24 }, (_, i) => {
+  const date = new Date(2024, 10 + i, 1)
+  const s = (x: number, mid: number, rate: number) => 1 / (1 + Math.exp(-(x - mid) / rate))
+  return {
+    month: date.toLocaleString("en-US", { month: "short" }),
+    members: Math.round(120 + 4880 * s(i, 13, 3.4)),
+    app: Math.round(60 + 3240 * s(i, 16, 2.6)),
+  }
+})
+
+export type DailyPoint = { day: string; revenue: number }
+
+export const daily: DailyPoint[] = Array.from({ length: 120 }, (_, i) => {
+  const date = new Date(2026, 6, 3 + i)
+  const weekday = date.getDay()
+  const weekend = weekday === 5 || weekday === 6 ? 1.45 : weekday === 0 ? 1.2 : 1
+  const noise = 0.82 + 0.36 * Math.abs(Math.sin(i * 2.31) * Math.cos(i * 0.73))
+  return {
+    day: date.toLocaleString("en-US", { month: "short", day: "numeric" }),
+    revenue: Math.round((4200 + 22 * i) * weekend * noise),
+  }
+})

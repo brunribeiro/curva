@@ -1,4 +1,5 @@
 import { ChannelsCard, OrdersCard } from "@/components/site/bar-cards"
+import { DailyCard, FlowCard, GrowthCard, TicketCard } from "@/components/site/expressive-cards"
 import { InstallCommand } from "@/components/site/install-command"
 import { RevenueCard } from "@/components/site/revenue-card"
 import { CategoryCard, GoalsCard } from "@/components/site/round-cards"
@@ -105,6 +106,27 @@ export default function Home() {
             </div>
             <div className="lg:col-span-2">
               <ExpensesCard />
+            </div>
+          </div>
+        </section>
+
+        <section className="pt-20">
+          <h2 className="text-2xl font-semibold tracking-tight">Flows, glass and ranges</h2>
+          <p className="mt-2 max-w-xl text-pretty text-muted-foreground">
+            Bands that flow from stage to stage, capsules that fill like glass, growth drawn in
+            dots, and a histogram you brush to ask about any stretch of time.
+          </p>
+          <div className="mt-6 max-w-xl">
+            <InstallCommand items={["flow-chart", "capsule-bar-chart", "dot-matrix-chart", "range-histogram"]} />
+          </div>
+          <div className="mt-8 grid gap-4 lg:grid-cols-2">
+            <div className="lg:col-span-2">
+              <FlowCard />
+            </div>
+            <TicketCard />
+            <GrowthCard />
+            <div className="lg:col-span-2">
+              <DailyCard />
             </div>
           </div>
         </section>

@@ -230,6 +230,114 @@
           "type": "registry:lib"
         }
       ]
+    },
+    {
+      "name": "flow-chart",
+      "type": "registry:ui",
+      "title": "Flow chart",
+      "description": "Bands that flow from stage to stage, washing in from the left, with totals on each stage.",
+      "dependencies": [
+        "motion",
+        "d3-shape"
+      ],
+      "devDependencies": [
+        "@types/d3-shape"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/curva/ui/flow-chart.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/ui/chart-parts.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/lib/curva.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "capsule-bar-chart",
+      "type": "registry:ui",
+      "title": "Capsule bar chart",
+      "description": "Glass capsules that fill like liquid, with the active one glowing in a gradient.",
+      "dependencies": [
+        "motion"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/curva/ui/capsule-bar-chart.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/ui/chart-parts.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/lib/curva.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "dot-matrix-chart",
+      "type": "registry:ui",
+      "title": "Dot matrix chart",
+      "description": "An area chart drawn in dots that fill column by column, capped by a brighter dot.",
+      "dependencies": [
+        "motion"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/curva/ui/dot-matrix-chart.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/ui/chart-parts.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/lib/curva.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "range-histogram",
+      "type": "registry:ui",
+      "title": "Range histogram",
+      "description": "A dense histogram with a brush: sweep, drag or arrow a range and read its total and change.",
+      "dependencies": [
+        "motion"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/curva/ui/range-histogram.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/ui/chart-parts.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/lib/curva.ts",
+          "type": "registry:lib"
+        }
+      ]
     }
   ]
 }
