@@ -1,0 +1,20 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "curva",
+  "homepage": "https://github.com/brunribeiro/curva",
+  "items": [
+    {
+      "name": "area-chart",
+      "type": "registry:ui",
+      "title": "Area chart",
+      "description": "An area chart that rises in on view, morphs between datasets and glides a spring-driven point along the curve.",
+      "dependencies": ["motion", "d3-shape"],
+      "devDependencies": ["@types/d3-shape"],
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/curva/ui/area-chart.tsx", "type": "registry:ui" },
+        { "path": "registry/curva/lib/curva.ts", "type": "registry:lib" }
+      ]
+    }
+  ]
+}

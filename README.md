@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Curva
 
-## Getting Started
+Animated chart components for [shadcn/ui](https://ui.shadcn.com). They install as source you own, read your theme's tokens, and move with your data.
 
-First, run the development server:
+## Install
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npx shadcn@latest add <registry-url>/r/area-chart.json
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+This adds `components/ui/area-chart.tsx` and `lib/curva.ts`, plus `motion` and `d3-shape`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Use
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```tsx
+import { AreaChart } from "@/components/ui/area-chart"
 
-## Learn More
+<AreaChart data={data} index="day" value="revenue" label="Revenue" />
+```
 
-To learn more about Next.js, take a look at the following resources:
+| Prop | Type | Default |
+| --- | --- | --- |
+| `data` | `T[]` | |
+| `index` | key of `T`, the label of each point | |
+| `value` | key of `T`, the number of each point | |
+| `label` | accessible name and series name | |
+| `color` | any CSS color | `var(--chart-1)` |
+| `formatValue` | `(n) => string`, tooltip and screen readers | `1,234.5` |
+| `formatAxis` | `(n) => string`, y-axis | `1.2K` |
+| `showXAxis` / `showYAxis` / `showGrid` | `boolean` | `true` |
+| `onActiveChange` | `(point, index) => void` | |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Size it with `className` (it defaults to `h-60 w-full`).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## How it moves
 
-## Deploy on Vercel
+- **Entrance:** the curve rises from the baseline in a left-to-right wave the first time it scrolls into view.
+- **Morphing:** new `data` reshapes the curve in place, even when the number of points changes and even mid-animation.
+- **Gliding:** the active point rides along the curve on a spring, the region to its right goes quiet, and the tooltip and axis labels count to their new values.
+- **Reduced motion:** with `prefers-reduced-motion`, every change happens instantly.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Accessibility
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The chart is a focusable group. Arrow keys, Home and End walk the points, Escape clears, the active value is announced through `aria-live`, and a visually hidden table carries the full dataset.
+
+## Develop
+
+```bash
+pnpm dev             # showcase at localhost:3000
+pnpm registry:build  # writes public/r/*.json
+pnpm typecheck && pnpm lint
+```
+
+Chart sources live in `registry/curva/`. Imports of `@/registry/curva/lib/*` become `@/lib/*` when installed.
+
+## License
+
+MIT © Bruno Ribeiro

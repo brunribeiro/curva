@@ -4,22 +4,32 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "shadcn build && next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "registry:build": "shadcn build"
   },
   "dependencies": {
+    "clsx": "^2.1.1",
+    "d3-scale": "^4.0.2",
+    "d3-shape": "^3.2.0",
+    "motion": "^14.7.1",
     "next": "16.4.3",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "tailwind-merge": "^3.7.0"
   },
   "devDependencies": {
     "@tailwindcss/turbopack": "^4",
+    "@types/d3-scale": "^4.0.9",
+    "@types/d3-shape": "^3.2.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.4.3",
+    "shadcn": "^4.23.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   },
