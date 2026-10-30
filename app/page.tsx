@@ -2,6 +2,7 @@ import { ChannelsCard, OrdersCard } from "@/components/site/bar-cards"
 import { InstallCommand } from "@/components/site/install-command"
 import { RevenueCard } from "@/components/site/revenue-card"
 import { CategoryCard, GoalsCard } from "@/components/site/round-cards"
+import { BudgetCard, BusyCard, ExpensesCard, HoursCard } from "@/components/site/shape-cards"
 import { ThemeToggle } from "@/components/site/theme-toggle"
 
 const features = [
@@ -51,7 +52,7 @@ export default function Home() {
             line.
           </p>
           <div className="mt-8 max-w-xl">
-            <InstallCommand item="area-chart" />
+            <InstallCommand items={["area-chart"]} />
           </div>
         </section>
 
@@ -64,7 +65,7 @@ export default function Home() {
             restack when a series leaves.
           </p>
           <div className="mt-6 max-w-xl">
-            <InstallCommand item="bar-chart" />
+            <InstallCommand items={["bar-chart"]} />
           </div>
           <div className="mt-8 grid gap-4 lg:grid-cols-2">
             <OrdersCard />
@@ -78,13 +79,33 @@ export default function Home() {
             Parts of a whole and progress toward goals. Rings pour in, segments reshape and make
             room, and the legend and center follow wherever you point.
           </p>
-          <div className="mt-6 grid max-w-xl gap-2">
-            <InstallCommand item="donut-chart" />
-            <InstallCommand item="radial-chart" />
+          <div className="mt-6 max-w-xl">
+            <InstallCommand items={["donut-chart", "radial-chart"]} />
           </div>
           <div className="mt-8 grid gap-4 lg:grid-cols-2">
             <CategoryCard />
             <GoalsCard />
+          </div>
+        </section>
+
+        <section className="pt-20">
+          <h2 className="text-2xl font-semibold tracking-tight">Beyond lines and bars</h2>
+          <p className="mt-2 max-w-xl text-pretty text-muted-foreground">
+            For numbers a line can&apos;t hold: a budget against its limit, the shape of a day, the
+            busiest hours of the week, where the money went.
+          </p>
+          <div className="mt-6 max-w-xl">
+            <InstallCommand items={["gauge-chart", "polar-bar-chart", "heatmap-chart", "split-bar"]} />
+          </div>
+          <div className="mt-8 grid gap-4 lg:grid-cols-2">
+            <BudgetCard />
+            <HoursCard />
+            <div className="lg:col-span-2">
+              <BusyCard />
+            </div>
+            <div className="lg:col-span-2">
+              <ExpensesCard />
+            </div>
           </div>
         </section>
 

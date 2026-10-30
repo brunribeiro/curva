@@ -9,9 +9,13 @@ npx shadcn@latest add <registry-url>/r/area-chart.json
 npx shadcn@latest add <registry-url>/r/bar-chart.json
 npx shadcn@latest add <registry-url>/r/donut-chart.json
 npx shadcn@latest add <registry-url>/r/radial-chart.json
+npx shadcn@latest add <registry-url>/r/gauge-chart.json
+npx shadcn@latest add <registry-url>/r/polar-bar-chart.json
+npx shadcn@latest add <registry-url>/r/heatmap-chart.json
+npx shadcn@latest add <registry-url>/r/split-bar.json
 ```
 
-Each chart adds its own file to `components/ui/` plus the shared `components/ui/chart-parts.tsx` and `lib/curva.ts`. The charts depend on `motion`, and all but the bar chart also need `d3-shape`.
+Each chart adds its own file to `components/ui/` plus the shared `components/ui/chart-parts.tsx` and `lib/curva.ts`. Every chart depends on `motion`. The area, donut, radial, gauge and polar bar charts also need `d3-shape`.
 
 ## Area chart
 
@@ -96,6 +100,46 @@ It takes the donut chart's props without `thickness`, plus `max` (a key of `T` o
 
 - **Entrance:** rings fill clockwise from the outside in, settling with a slight overshoot.
 - **Changes:** each ring springs to its new progress. Progress stops at a full ring.
+
+## Gauge chart
+
+```tsx
+import { GaugeChart } from "@/components/ui/gauge-chart"
+
+<GaugeChart value={8240} max={12000} target={9600} label="Budget spent" />
+```
+
+A half circle of blocks (`segments`, default 24) that ramp from a light tint up to `color`. The blocks light up one by one toward the value and go out one by one when it drops. `target` adds a tick on the arc, `caption` sets the line above the number, and pointing at the gauge swaps the share for what's left. It's exposed as a `meter`.
+
+## Polar bar chart
+
+```tsx
+import { PolarBarChart } from "@/components/ui/polar-bar-chart"
+
+<PolarBarChart data={hours} index="hour" value="orders" label="Orders by hour" />
+```
+
+Bars around a circle, clockwise from 12 o'clock: hours of a day, days of a week, months of a year. Bars grow out in a clockwise sweep, deeper values read darker, and the center counts to the total or to the active bar. `labelEvery` controls the outer labels (four quarters by default).
+
+## Heatmap chart
+
+```tsx
+import { HeatmapChart } from "@/components/ui/heatmap-chart"
+
+<HeatmapChart data={cells} row="day" column="hour" value="orders" label="Orders" shape="hex" />
+```
+
+One point per cell, as rounded squares or a honeycomb (`shape`). Cells ripple in diagonally, a lens glides from cell to cell, and the active row and column stay lit while the rest step back. Arrow keys walk the grid in both directions. `rows` and `columns` set the order. The chart takes its height from the grid, so size it by width.
+
+## Split bar
+
+```tsx
+import { SplitBar } from "@/components/ui/split-bar"
+
+<SplitBar data={expenses} index="item" value="amount" label="Expenses by category" />
+```
+
+A share-of-total bar woven from thin ticks, each part marked by a taller leading tick and a label. The ticks rise like an equalizer and regroup when values change. Pointing at a part shows its value, and labels too narrow to fit appear on demand.
 
 ## Motion and reduced motion
 

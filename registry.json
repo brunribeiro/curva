@@ -8,13 +8,29 @@
       "type": "registry:ui",
       "title": "Area chart",
       "description": "An area chart that rises in on view, morphs between datasets and glides a spring-driven point along the curve.",
-      "dependencies": ["motion", "d3-shape"],
-      "devDependencies": ["@types/d3-shape"],
-      "registryDependencies": ["utils"],
+      "dependencies": [
+        "motion",
+        "d3-shape"
+      ],
+      "devDependencies": [
+        "@types/d3-shape"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/curva/ui/area-chart.tsx", "type": "registry:ui" },
-        { "path": "registry/curva/ui/chart-parts.tsx", "type": "registry:ui" },
-        { "path": "registry/curva/lib/curva.ts", "type": "registry:lib" }
+        {
+          "path": "registry/curva/ui/area-chart.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/ui/chart-parts.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/lib/curva.ts",
+          "type": "registry:lib"
+        }
       ]
     },
     {
@@ -22,12 +38,25 @@
       "type": "registry:ui",
       "title": "Bar chart",
       "description": "Grouped or stacked bars that grow in on view, slide to new slots when the data changes and restack when a series leaves.",
-      "dependencies": ["motion"],
-      "registryDependencies": ["utils"],
+      "dependencies": [
+        "motion"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/curva/ui/bar-chart.tsx", "type": "registry:ui" },
-        { "path": "registry/curva/ui/chart-parts.tsx", "type": "registry:ui" },
-        { "path": "registry/curva/lib/curva.ts", "type": "registry:lib" }
+        {
+          "path": "registry/curva/ui/bar-chart.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/ui/chart-parts.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/lib/curva.ts",
+          "type": "registry:lib"
+        }
       ]
     },
     {
@@ -35,13 +64,29 @@
       "type": "registry:ui",
       "title": "Donut chart",
       "description": "A donut that pours in clockwise, reshapes as values change, lifts the active segment and links to its legend.",
-      "dependencies": ["motion", "d3-shape"],
-      "devDependencies": ["@types/d3-shape"],
-      "registryDependencies": ["utils"],
+      "dependencies": [
+        "motion",
+        "d3-shape"
+      ],
+      "devDependencies": [
+        "@types/d3-shape"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/curva/ui/donut-chart.tsx", "type": "registry:ui" },
-        { "path": "registry/curva/ui/chart-parts.tsx", "type": "registry:ui" },
-        { "path": "registry/curva/lib/curva.ts", "type": "registry:lib" }
+        {
+          "path": "registry/curva/ui/donut-chart.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/ui/chart-parts.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/lib/curva.ts",
+          "type": "registry:lib"
+        }
       ]
     },
     {
@@ -49,13 +94,141 @@
       "type": "registry:ui",
       "title": "Radial chart",
       "description": "Concentric progress rings that fill from the outside in and count toward each goal.",
-      "dependencies": ["motion", "d3-shape"],
-      "devDependencies": ["@types/d3-shape"],
-      "registryDependencies": ["utils"],
+      "dependencies": [
+        "motion",
+        "d3-shape"
+      ],
+      "devDependencies": [
+        "@types/d3-shape"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/curva/ui/radial-chart.tsx", "type": "registry:ui" },
-        { "path": "registry/curva/ui/chart-parts.tsx", "type": "registry:ui" },
-        { "path": "registry/curva/lib/curva.ts", "type": "registry:lib" }
+        {
+          "path": "registry/curva/ui/radial-chart.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/ui/chart-parts.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/lib/curva.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "gauge-chart",
+      "type": "registry:ui",
+      "title": "Gauge chart",
+      "description": "A half circle of blocks that light up one by one toward a value, with an optional target mark.",
+      "dependencies": [
+        "motion",
+        "d3-shape"
+      ],
+      "devDependencies": [
+        "@types/d3-shape"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/curva/ui/gauge-chart.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/ui/chart-parts.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/lib/curva.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "polar-bar-chart",
+      "type": "registry:ui",
+      "title": "Polar bar chart",
+      "description": "Bars around a circle, like hours on a clock, that grow out in a clockwise sweep.",
+      "dependencies": [
+        "motion",
+        "d3-shape"
+      ],
+      "devDependencies": [
+        "@types/d3-shape"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/curva/ui/polar-bar-chart.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/ui/chart-parts.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/lib/curva.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "heatmap-chart",
+      "type": "registry:ui",
+      "title": "Heatmap chart",
+      "description": "A grid or honeycomb of cells that ripples in, with a lens that glides from cell to cell.",
+      "dependencies": [
+        "motion"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/curva/ui/heatmap-chart.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/ui/chart-parts.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/lib/curva.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "split-bar",
+      "type": "registry:ui",
+      "title": "Split bar",
+      "description": "A share-of-total bar woven from thin ticks that rise like an equalizer and regroup as values change.",
+      "dependencies": [
+        "motion"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/curva/ui/split-bar.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/ui/chart-parts.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/lib/curva.ts",
+          "type": "registry:lib"
+        }
       ]
     }
   ]

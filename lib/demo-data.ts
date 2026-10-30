@@ -123,3 +123,58 @@ export const goals: Record<GoalMonth, GoalPoint[]> = {
     { goal: "New customers", value: 368, target: 400, unit: "count", color: "var(--chart-4)" },
   ],
 }
+
+export const budget: Record<GoalMonth, { spent: number; limit: number; plan: number }> = {
+  sep: { spent: 8240, limit: 12000, plan: 9600 },
+  oct: { spent: 10860, limit: 12000, plan: 9600 },
+}
+
+export type HourPoint = { hour: string; orders: number }
+
+const hourLabel = (h: number) => `${h % 12 === 0 ? 12 : h % 12}${h < 12 ? "am" : "pm"}`
+
+const weekdayHours = [
+  4, 2, 1, 1, 0, 2, 9, 22, 31, 26, 34, 58, 96, 88, 47, 33, 41, 72, 104, 97, 71, 44, 23, 11,
+]
+const weekendHours = [
+  14, 8, 4, 2, 1, 1, 3, 9, 24, 52, 78, 92, 87, 74, 58, 49, 56, 88, 121, 128, 102, 73, 48, 27,
+]
+
+export const hours: Record<"weekdays" | "weekend", HourPoint[]> = {
+  weekdays: weekdayHours.map((orders, h) => ({ hour: hourLabel(h), orders })),
+  weekend: weekendHours.map((orders, h) => ({ hour: hourLabel(h), orders })),
+}
+
+export type BusyPoint = { day: string; slot: string; orders: number }
+
+const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+const slots = Array.from({ length: 12 }, (_, i) => hourLabel(i + 10))
+
+export const busy: BusyPoint[] = days.flatMap((day, d) =>
+  slots.map((slot, s) => {
+    const lunch = Math.exp(-((s - 2.5) ** 2) / 2.2)
+    const dinner = Math.exp(-((s - 8.5) ** 2) / 3)
+    const weekend = d >= 4 ? 1.35 + (d === 5 ? 0.2 : 0) : 1
+    const wobble = 0.85 + 0.3 * Math.abs(Math.sin((d + 1) * (s + 3) * 1.7))
+    return { day, slot, orders: Math.round((18 + 62 * lunch + 84 * dinner * weekend) * wobble) }
+  })
+)
+
+export type ExpensePoint = { item: string; amount: number; color: string }
+
+export const expenses: Record<GoalMonth, ExpensePoint[]> = {
+  sep: [
+    { item: "Payroll", amount: 18400, color: "var(--chart-1)" },
+    { item: "Ingredients", amount: 12600, color: "var(--chart-2)" },
+    { item: "Rent", amount: 6500, color: "var(--chart-3)" },
+    { item: "Marketing", amount: 3200, color: "var(--chart-4)" },
+    { item: "Utilities", amount: 1900, color: "var(--chart-5)" },
+  ],
+  oct: [
+    { item: "Payroll", amount: 19100, color: "var(--chart-1)" },
+    { item: "Ingredients", amount: 14900, color: "var(--chart-2)" },
+    { item: "Rent", amount: 6500, color: "var(--chart-3)" },
+    { item: "Marketing", amount: 5800, color: "var(--chart-4)" },
+    { item: "Utilities", amount: 2100, color: "var(--chart-5)" },
+  ],
+}
