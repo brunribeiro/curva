@@ -3,7 +3,6 @@
 import * as React from "react"
 import { area as d3Area, curveMonotoneX, line as d3Line } from "d3-shape"
 import {
-  AnimatePresence,
   animate,
   motion,
   useInView,
@@ -11,24 +10,33 @@ import {
   useMotionValueEvent,
   useReducedMotion,
   useSpring,
-  useTransform,
-  type MotionValue,
 } from "motion/react"
 
 import { cn } from "@/lib/utils"
 import {
+  PAD,
   SAMPLES,
   clamp,
   flat,
   formatCompact,
   formatNumber,
+  frameOf,
+  labelStep,
   niceDomain,
   normalize,
   sampleAt,
   sampleMonotone,
+  useActivePoint,
   useElementSize,
   waveFrame,
 } from "@/registry/curva/lib/curva"
+import {
+  ChartDescription,
+  ChartGrid,
+  ChartTooltip,
+  XAxis,
+  YAxis,
+} from "@/registry/curva/ui/chart-parts"
 
 type Datum = Record<string, unknown>
 
@@ -54,23 +62,11 @@ export type AreaChartProps<T extends Datum> = {
   onActiveChange?: (point: T | null, index: number | null) => void
 }
 
-const PAD = { top: 12, side: 8, axis: 44, labels: 28 }
-
 /** How the active dot rides the curve between points. */
 const GLIDE = { stiffness: 380, damping: 36, mass: 0.7 }
-/** How labels count to new values. */
-const COUNT = { stiffness: 120, damping: 24 }
 
 const ENTRANCE = { duration: 1.25, stagger: 0.5 }
 const MORPH = { duration: 0.9, stagger: 0.24 }
-
-function frameOf(width: number, height: number, xAxis: boolean, yAxis: boolean) {
-  const left = yAxis ? PAD.axis : PAD.side
-  const right = width - PAD.side
-  const top = PAD.top
-  const bottom = height - (xAxis ? PAD.labels : PAD.side)
-  return { left, right, top, bottom, w: Math.max(0, right - left), h: Math.max(0, bottom - top) }
-}
 
 export function AreaChart<T extends Datum>({
   data,
@@ -104,20 +100,16 @@ export function AreaChart<T extends Datum>({
 
   const n = values.length
   const frame = frameOf(size.width, size.height, showXAxis, showYAxis)
-  const uOf = (k: number) => (n <= 1 ? 0 : k / (n - 1))
-  const xOf = (k: number) => frame.left + uOf(k) * frame.w
+  const xOf = (k: number) => frame.left + (n <= 1 ? 0 : k / (n - 1)) * frame.w
 
-  const [active, setActive] = React.useState<number | null>(null)
-  const [last, setLast] = React.useState(0)
-  const activeIndex = active === null ? null : Math.min(active, n - 1)
-  const shownIndex = Math.min(last, Math.max(0, n - 1))
+  const { activeIndex, shownIndex, fresh, select, onKeyDown } = useActivePoint(n, (k) =>
+    onActiveChange?.(k === null ? null : data[k], k)
+  )
 
   // Everything that moves is a motion value painted outside React renders.
   const progress = useMotionValue(0)
   const glide = useSpring(0, GLIDE)
   const reveal = useSpring(1, GLIDE)
-  const tipValue = useSpring(0, COUNT)
-  const tipText = useTransform(tipValue, (v) => formatValue(v))
   const lineD = useMotionValue("")
   const areaD = useMotionValue("")
   const dotX = useMotionValue(0)
@@ -223,35 +215,19 @@ export function AreaChart<T extends Datum>({
     animate(progress, 1, { duration: ENTRANCE.duration, ease: "linear", delay: 0.1 })
   }, [inView, size.width, reduced, paint, progress])
 
-  // Follow the active point: the dot glides along the curve, the tooltip counts.
-  const previous = React.useRef<number | null>(null)
+  // The dot glides along the curve; what lies right of it goes quiet.
   React.useEffect(() => {
-    const entering = previous.current === null
-    previous.current = activeIndex
     if (activeIndex === null) {
       if (reduced) reveal.jump(1)
       else reveal.set(1)
       return
     }
     const u = n <= 1 ? 0 : activeIndex / (n - 1)
-    const v = values[activeIndex]
-    if (entering || reduced) {
-      glide.jump(u)
-      tipValue.jump(v)
-    } else {
-      glide.set(u)
-      tipValue.set(v)
-    }
+    if (fresh || reduced) glide.jump(u)
+    else glide.set(u)
     if (reduced) reveal.jump(u)
     else reveal.set(u)
-  }, [activeIndex, n, values, reduced, glide, reveal, tipValue])
-
-  const select = (k: number | null) => {
-    if (k === activeIndex) return
-    setActive(k)
-    if (k !== null) setLast(k)
-    onActiveChange?.(k === null ? null : data[k], k)
-  }
+  }, [activeIndex, fresh, n, reduced, glide, reveal])
 
   const indexAt = (clientX: number) => {
     const rect = rootRef.current?.getBoundingClientRect()
@@ -259,33 +235,6 @@ export function AreaChart<T extends Datum>({
     return Math.round(clamp((clientX - rect.left - frame.left) / frame.w, 0, 1) * (n - 1))
   }
 
-  const onKeyDown = (e: React.KeyboardEvent) => {
-    if (n === 0) return
-    let k = activeIndex
-    switch (e.key) {
-      case "ArrowRight":
-        k = k === null ? 0 : Math.min(k + 1, n - 1)
-        break
-      case "ArrowLeft":
-        k = k === null ? n - 1 : Math.max(k - 1, 0)
-        break
-      case "Home":
-        k = 0
-        break
-      case "End":
-        k = n - 1
-        break
-      case "Escape":
-        k = null
-        break
-      default:
-        return
-    }
-    e.preventDefault()
-    select(k)
-  }
-
-  const labelStep = Math.max(1, Math.ceil(n / Math.max(2, Math.floor(frame.w / 56))))
   const isActive = activeIndex !== null
   const ticks = domain.ticks.map((t) => (inView ? t : 0))
 
@@ -323,33 +272,8 @@ export function AreaChart<T extends Datum>({
             </clipPath>
           </defs>
 
-          {showGrid &&
-            ticks.map((_, k) => {
-              const y = frame.top + (1 - k / (ticks.length - 1)) * frame.h
-              return (
-                <line
-                  key={k}
-                  x1={frame.left}
-                  x2={frame.right}
-                  y1={y}
-                  y2={y}
-                  className="stroke-border"
-                  strokeDasharray={k === 0 ? undefined : "2 4"}
-                />
-              )
-            })}
-
-          {showYAxis &&
-            ticks.map((t, k) => (
-              <TickLabel
-                key={k}
-                value={t}
-                x={frame.left - 10}
-                y={frame.top + (1 - k / (ticks.length - 1)) * frame.h}
-                format={formatAxis}
-                reduced={reduced}
-              />
-            ))}
+          {showGrid && <ChartGrid frame={frame} lines={ticks.length} />}
+          {showYAxis && <YAxis ticks={ticks} frame={frame} format={formatAxis} />}
 
           {/* Resting layer: what lies right of the active point stays quiet. */}
           <g opacity={0.32}>
@@ -362,32 +286,14 @@ export function AreaChart<T extends Datum>({
           </g>
 
           {showXAxis && (
-            <AnimatePresence initial={false}>
-              <motion.g
-                key={labels.join("|")}
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
-                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-              >
-                {labels.map((text, k) =>
-                  k % labelStep === 0 ? (
-                    <text
-                      key={k}
-                      x={xOf(k)}
-                      y={size.height - 8}
-                      textAnchor={k === 0 && !showYAxis ? "start" : "middle"}
-                      className={cn(
-                        "fill-muted-foreground text-[11px] transition-[fill] duration-150",
-                        k === activeIndex && "fill-foreground"
-                      )}
-                    >
-                      {text}
-                    </text>
-                  ) : null
-                )}
-              </motion.g>
-            </AnimatePresence>
+            <XAxis
+              labels={labels}
+              xOf={xOf}
+              y={size.height - 8}
+              step={labelStep(n, frame.w)}
+              activeIndex={activeIndex}
+              alignStart={!showYAxis}
+            />
           )}
 
           <motion.g
@@ -417,83 +323,22 @@ export function AreaChart<T extends Datum>({
         </svg>
       )}
 
-      <motion.div
+      <ChartTooltip
         ref={tipRef}
-        aria-hidden
-        className="pointer-events-none absolute top-0 left-0 z-10 rounded-lg border bg-popover px-2.5 py-1.5 whitespace-nowrap text-popover-foreground shadow-lg shadow-black/5"
+        title={labels[shownIndex] ?? ""}
+        rows={[{ key: value, label, color, value: values[shownIndex] ?? 0 }]}
+        active={isActive}
+        fresh={fresh}
+        format={formatValue}
         style={{ x: tipX, y: tipY }}
-        initial={false}
-        animate={{ opacity: isActive ? 1 : 0, scale: isActive ? 1 : 0.94 }}
-        transition={{ duration: 0.16 }}
-      >
-        <div className="text-[11px] text-muted-foreground">{labels[shownIndex]}</div>
-        <div className="flex items-center gap-1.5 text-sm font-medium tabular-nums">
-          <span className="size-2 rounded-full" style={{ background: color }} />
-          <span className="text-muted-foreground">{label}</span>
-          <motion.span className="ml-2">{tipText}</motion.span>
-        </div>
-      </motion.div>
+      />
 
-      <div aria-live="polite" className="sr-only">
-        {activeIndex !== null ? `${labels[activeIndex]}: ${formatValue(values[activeIndex])}` : ""}
-      </div>
-      <table className="sr-only">
-        <caption>{label}</caption>
-        <tbody>
-          {labels.map((text, k) => (
-            <tr key={k}>
-              <th scope="row">{text}</th>
-              <td>{formatValue(values[k])}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <ChartDescription
+        label={label}
+        columns={[label]}
+        rows={labels.map((text, k) => ({ label: text, values: [formatValue(values[k])] }))}
+        live={activeIndex !== null ? `${labels[activeIndex]}: ${formatValue(values[activeIndex])}` : ""}
+      />
     </div>
-  )
-}
-
-function TickLabel({
-  value,
-  x,
-  y,
-  format,
-  reduced,
-}: {
-  value: number
-  x: number
-  y: number
-  format: (value: number) => string
-  reduced: boolean
-}) {
-  const count = useSpring(value, COUNT)
-  React.useEffect(() => {
-    if (reduced) count.jump(value)
-    else count.set(value)
-  }, [count, value, reduced])
-  return <CountText value={count} format={format} x={x} y={y} />
-}
-
-function CountText({
-  value,
-  format,
-  x,
-  y,
-}: {
-  value: MotionValue<number>
-  format: (value: number) => string
-  x: number
-  y: number
-}) {
-  const text = useTransform(value, (v) => format(v))
-  return (
-    <motion.text
-      x={x}
-      y={y}
-      dy="0.32em"
-      textAnchor="end"
-      className="fill-muted-foreground text-[11px] tabular-nums"
-    >
-      {text}
-    </motion.text>
   )
 }

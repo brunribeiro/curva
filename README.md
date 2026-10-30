@@ -6,11 +6,12 @@ Animated chart components for [shadcn/ui](https://ui.shadcn.com). They install a
 
 ```bash
 npx shadcn@latest add <registry-url>/r/area-chart.json
+npx shadcn@latest add <registry-url>/r/bar-chart.json
 ```
 
-This adds `components/ui/area-chart.tsx` and `lib/curva.ts`, plus `motion` and `d3-shape`.
+Each chart adds its own file to `components/ui/` plus the shared `components/ui/chart-parts.tsx` and `lib/curva.ts`. The charts depend on `motion`, and the area chart also needs `d3-shape`.
 
-## Use
+## Area chart
 
 ```tsx
 import { AreaChart } from "@/components/ui/area-chart"
@@ -32,12 +33,36 @@ import { AreaChart } from "@/components/ui/area-chart"
 
 Size it with `className` (it defaults to `h-60 w-full`).
 
-## How it moves
-
 - **Entrance:** the curve rises from the baseline in a left-to-right wave the first time it scrolls into view.
 - **Morphing:** new `data` reshapes the curve in place, even when the number of points changes and even mid-animation.
 - **Gliding:** the active point rides along the curve on a spring, the region to its right goes quiet, and the tooltip and axis labels count to their new values.
-- **Reduced motion:** with `prefers-reduced-motion`, every change happens instantly.
+
+## Bar chart
+
+```tsx
+import { BarChart } from "@/components/ui/bar-chart"
+
+<BarChart
+  data={data}
+  index="month"
+  series={[
+    { key: "online", label: "Online store" },
+    { key: "marketplace", label: "Marketplace" },
+  ]}
+  stacked
+  label="Revenue by channel"
+/>
+```
+
+It takes the same props as the area chart, except `series` (each with `key`, `label` and an optional `color`) replaces `value` and `color`, and `stacked` puts the series in one bar instead of side by side. Without a `color`, series take `--chart-1` to `--chart-5` in order, so pass colors when series can be hidden. Bars expect values of zero or more.
+
+- **Entrance:** bars grow from the baseline with a slight overshoot in a left-to-right wave, and stacks fill from the bottom up.
+- **Morphing:** when the number of columns changes, bars slide to their new slots while new ones grow in and old ones sink away. A removed series shrinks out and the rest restack.
+- **Highlight:** a soft band glides to the active column, the other columns step back, and the tooltip follows on a spring and flips sides near the edge.
+
+## Motion and reduced motion
+
+Each chart has one orchestrated moment, its entrance. Everything after that answers the visitor. With `prefers-reduced-motion`, every change happens instantly.
 
 ## Accessibility
 

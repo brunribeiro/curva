@@ -1,4 +1,5 @@
 import * as React from "react"
+import { useReducedMotion, useSpring, useTransform, type MotionValue } from "motion/react"
 
 /**
  * Curva core: the maths every chart shares.
@@ -97,11 +98,12 @@ export type Domain = { lo: number; hi: number; ticks: number[] }
 
 const DIVISIONS = 4
 
+const NICE_UNITS = [1, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10]
+
 function niceStep(raw: number) {
   const power = 10 ** Math.floor(Math.log10(raw))
   const unit = raw / power
-  const nice = unit <= 1 ? 1 : unit <= 2 ? 2 : unit <= 2.5 ? 2.5 : unit <= 5 ? 5 : 10
-  return nice * power
+  return (NICE_UNITS.find((u) => unit <= u + 1e-9) ?? 10) * power
 }
 
 /**
@@ -137,6 +139,104 @@ const compactNumber = new Intl.NumberFormat("en-US", {
 
 export const formatNumber = (v: number) => fullNumber.format(v)
 export const formatCompact = (v: number) => compactNumber.format(v)
+
+/** Default series colors, cycling through the theme's five chart colors. */
+export const seriesColor = (i: number) => `var(--chart-${(i % 5) + 1})`
+
+export const PAD = { top: 12, side: 8, axis: 44, labels: 28 }
+
+export type Frame = {
+  left: number
+  right: number
+  top: number
+  bottom: number
+  w: number
+  h: number
+}
+
+/** The plot area inside a chart of the given size. */
+export function frameOf(width: number, height: number, xAxis: boolean, yAxis: boolean): Frame {
+  const left = yAxis ? PAD.axis : PAD.side
+  const right = width - PAD.side
+  const top = PAD.top
+  const bottom = height - (xAxis ? PAD.labels : PAD.side)
+  return { left, right, top, bottom, w: Math.max(0, right - left), h: Math.max(0, bottom - top) }
+}
+
+/** Shows every nth x label so they never collide. */
+export const labelStep = (count: number, width: number, room = 56) =>
+  Math.max(1, Math.ceil(count / Math.max(2, Math.floor(width / room))))
+
+/** How labels count to new values. */
+export const COUNT = { stiffness: 120, damping: 24 }
+/** How highlights and tooltips travel between points. */
+export const SLIDE = { stiffness: 420, damping: 40 }
+
+/** A spring that follows `target`, or jumps there when `instant` or reduced motion. */
+export function useFollow(target: number, instant = false, config = SLIDE): MotionValue<number> {
+  const reduced = useReducedMotion() ?? false
+  const value = useSpring(target, config)
+  React.useEffect(() => {
+    if (instant || reduced) value.jump(target)
+    else value.set(target)
+  }, [value, target, instant, reduced])
+  return value
+}
+
+/** A formatted number that counts to each new value. */
+export function useCount(value: number, format: (v: number) => string, instant = false) {
+  const spring = useFollow(value, instant, COUNT)
+  return useTransform(spring, (v) => format(v))
+}
+
+/**
+ * The point the visitor is on, from pointer, touch or keyboard. `fresh` is
+ * true when they have just arrived, so highlights appear in place instead of
+ * travelling from wherever they last were.
+ */
+export function useActivePoint(count: number, onChange?: (index: number | null) => void) {
+  const [active, setActive] = React.useState<number | null>(null)
+  const [last, setLast] = React.useState(0)
+  const [fresh, setFresh] = React.useState(true)
+  const activeIndex = active === null || count === 0 ? null : Math.min(active, count - 1)
+  const shownIndex = Math.min(last, Math.max(0, count - 1))
+
+  const select = (k: number | null) => {
+    if (k === activeIndex) return
+    setFresh(activeIndex === null)
+    setActive(k)
+    if (k !== null) setLast(k)
+    onChange?.(k)
+  }
+
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    if (count === 0) return
+    let k = activeIndex
+    switch (e.key) {
+      case "ArrowRight":
+        k = k === null ? 0 : Math.min(k + 1, count - 1)
+        break
+      case "ArrowLeft":
+        k = k === null ? count - 1 : Math.max(k - 1, 0)
+        break
+      case "Home":
+        k = 0
+        break
+      case "End":
+        k = count - 1
+        break
+      case "Escape":
+        k = null
+        break
+      default:
+        return
+    }
+    e.preventDefault()
+    select(k)
+  }
+
+  return { activeIndex, shownIndex, fresh, select, onKeyDown }
+}
 
 /** Tracks an element's content box. */
 export function useElementSize(ref: React.RefObject<HTMLElement | null>) {

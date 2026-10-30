@@ -1,3 +1,4 @@
+import { ChannelsCard, OrdersCard } from "@/components/site/bar-cards"
 import { InstallCommand } from "@/components/site/install-command"
 import { RevenueCard } from "@/components/site/revenue-card"
 import { ThemeToggle } from "@/components/site/theme-toggle"
@@ -54,6 +55,21 @@ export default function Home() {
         </section>
 
         <RevenueCard />
+
+        <section className="pt-20">
+          <h2 className="text-2xl font-semibold tracking-tight">Bar charts</h2>
+          <p className="mt-2 max-w-xl text-pretty text-muted-foreground">
+            Side by side or stacked. Bars slide to their new slots, grow in from the baseline, and
+            restack when a series leaves.
+          </p>
+          <div className="mt-6 max-w-xl">
+            <InstallCommand item="bar-chart" />
+          </div>
+          <div className="mt-8 grid gap-4 lg:grid-cols-2">
+            <OrdersCard />
+            <ChannelsCard />
+          </div>
+        </section>
 
         <section className="grid gap-x-8 gap-y-6 py-14 sm:grid-cols-2 lg:grid-cols-4">
           {features.map((f) => (

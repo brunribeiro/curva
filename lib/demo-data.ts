@@ -32,3 +32,36 @@ export const revenue: Record<Range, { data: RevenuePoint[]; delta: number; perio
   month: { data: month, delta: 8.1, period: "last month" },
   year: { data: year, delta: 23.7, period: "last year" },
 }
+
+export type OrdersPoint = { label: string; orders: number }
+
+const ordersWeek = [182, 214, 168, 251, 236, 298, 274].map((orders, i) => ({
+  label: week[i].label,
+  orders,
+}))
+
+const ordersMonth = month.map((d, i) => ({
+  label: d.label,
+  orders: Math.round(210 + 50 * Math.sin(i / 2.3) + 30 * Math.sin(i / 1.1 + 2) + 2 * i),
+}))
+
+const ordersYear = [5480, 5920, 5610, 6340, 6890, 6620, 7310, 7720, 7050, 7980, 8410, 9120].map(
+  (orders, i) => ({ label: year[i].label, orders })
+)
+
+export const orders: Record<Range, { data: OrdersPoint[]; period: string }> = {
+  week: { data: ordersWeek, period: "week" },
+  month: { data: ordersMonth, period: "month" },
+  year: { data: ordersYear, period: "year" },
+}
+
+export type ChannelPoint = { label: string; online: number; marketplace: number; inPerson: number }
+
+export const channels: ChannelPoint[] = [
+  { label: "May", online: 42800, marketplace: 18400, inPerson: 12600 },
+  { label: "Jun", online: 46100, marketplace: 21200, inPerson: 11800 },
+  { label: "Jul", online: 44900, marketplace: 19800, inPerson: 13900 },
+  { label: "Aug", online: 51200, marketplace: 23600, inPerson: 12400 },
+  { label: "Sep", online: 55800, marketplace: 24900, inPerson: 14800 },
+  { label: "Oct", online: 61300, marketplace: 28100, inPerson: 15200 },
+]
