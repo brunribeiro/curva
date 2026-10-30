@@ -194,6 +194,113 @@ export function Count({
   return <motion.span className={className}>{text}</motion.span>
 }
 
+export type LegendRow = {
+  key: string
+  label: string
+  color: string
+  value: number
+  format: (value: number) => string
+  /** A share or progress in percent, shown after the value. */
+  percent?: number
+}
+
+/** Rows that follow the chart: pointing at one activates its point, and the highlight glides. */
+export function ChartLegend({
+  rows,
+  activeIndex,
+  onSelect,
+}: {
+  rows: readonly LegendRow[]
+  activeIndex: number | null
+  onSelect: (index: number | null) => void
+}) {
+  const id = React.useId()
+  return (
+    <ul aria-hidden className="w-full min-w-0 flex-1 text-sm">
+      {rows.map((row, k) => (
+        <li
+          key={row.key}
+          onPointerEnter={() => onSelect(k)}
+          onPointerLeave={() => onSelect(null)}
+          className="relative flex items-center gap-2.5 rounded-md px-2.5 py-1.5"
+        >
+          <AnimatePresence>
+            {activeIndex === k && (
+              <motion.span
+                layoutId={`${id}-row`}
+                className="absolute inset-0 rounded-md bg-muted"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ type: "spring", stiffness: 500, damping: 40 }}
+              />
+            )}
+          </AnimatePresence>
+          <span className="relative size-2.5 shrink-0 rounded-full" style={{ background: row.color }} />
+          <span className="relative min-w-0 flex-1 truncate text-muted-foreground">{row.label}</span>
+          <Count value={row.value} format={row.format} className="relative font-medium tabular-nums" />
+          {row.percent !== undefined && (
+            <Count
+              value={row.percent}
+              format={(v) => `${Math.round(v)}%`}
+              className="relative w-10 text-right text-muted-foreground tabular-nums"
+            />
+          )}
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+/** The number in the middle of a donut or radial chart. */
+export function ChartCenter({
+  title,
+  value,
+  format,
+  detail,
+  instant = false,
+}: {
+  title: string
+  value: number
+  format: (value: number) => string
+  /** A second, quieter line such as a share; hidden when undefined. */
+  detail?: { value: number; format: (value: number) => string }
+  instant?: boolean
+}) {
+  return (
+    <div className="pointer-events-none absolute inset-0 grid place-items-center text-center">
+      <div className="max-w-[60%]">
+        <AnimatePresence mode="popLayout" initial={false}>
+          <motion.p
+            key={title}
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.2 }}
+            className="truncate text-xs text-muted-foreground"
+          >
+            {title}
+          </motion.p>
+        </AnimatePresence>
+        <Count
+          value={value}
+          format={format}
+          instant={instant}
+          className="block text-xl font-semibold tracking-tight tabular-nums @[15rem]:text-2xl"
+        />
+        <motion.p
+          initial={false}
+          animate={{ opacity: detail ? 1 : 0 }}
+          transition={{ duration: 0.18 }}
+          className="text-xs text-muted-foreground tabular-nums"
+        >
+          <Count value={detail?.value ?? 0} format={detail?.format ?? String} instant={instant} />
+        </motion.p>
+      </div>
+    </div>
+  )
+}
+
 /** Announces the active point and carries the full dataset as a table. */
 export function ChartDescription({
   label,

@@ -1,6 +1,7 @@
 import { ChannelsCard, OrdersCard } from "@/components/site/bar-cards"
 import { InstallCommand } from "@/components/site/install-command"
 import { RevenueCard } from "@/components/site/revenue-card"
+import { CategoryCard, GoalsCard } from "@/components/site/round-cards"
 import { ThemeToggle } from "@/components/site/theme-toggle"
 
 const features = [
@@ -68,6 +69,22 @@ export default function Home() {
           <div className="mt-8 grid gap-4 lg:grid-cols-2">
             <OrdersCard />
             <ChannelsCard />
+          </div>
+        </section>
+
+        <section className="pt-20">
+          <h2 className="text-2xl font-semibold tracking-tight">Donut and radial charts</h2>
+          <p className="mt-2 max-w-xl text-pretty text-muted-foreground">
+            Parts of a whole and progress toward goals. Rings pour in, segments reshape and make
+            room, and the legend and center follow wherever you point.
+          </p>
+          <div className="mt-6 grid max-w-xl gap-2">
+            <InstallCommand item="donut-chart" />
+            <InstallCommand item="radial-chart" />
+          </div>
+          <div className="mt-8 grid gap-4 lg:grid-cols-2">
+            <CategoryCard />
+            <GoalsCard />
           </div>
         </section>
 

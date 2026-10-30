@@ -65,3 +65,61 @@ export const channels: ChannelPoint[] = [
   { label: "Sep", online: 55800, marketplace: 24900, inPerson: 14800 },
   { label: "Oct", online: 61300, marketplace: 28100, inPerson: 15200 },
 ]
+
+export type CategoryPoint = { category: string; revenue: number; color: string }
+
+const categoryColor: Record<string, string> = {
+  Apparel: "var(--chart-1)",
+  Electronics: "var(--chart-2)",
+  Home: "var(--chart-3)",
+  Beauty: "var(--chart-4)",
+  Outdoor: "var(--chart-5)",
+}
+
+const categoryRows = (rows: [string, number][]): CategoryPoint[] =>
+  rows.map(([category, revenue]) => ({ category, revenue, color: categoryColor[category] }))
+
+export const categories: Record<Range, CategoryPoint[]> = {
+  week: categoryRows([
+    ["Apparel", 12400],
+    ["Electronics", 9800],
+    ["Home", 6200],
+    ["Beauty", 4100],
+  ]),
+  month: categoryRows([
+    ["Apparel", 48200],
+    ["Electronics", 51600],
+    ["Home", 27400],
+    ["Beauty", 18900],
+  ]),
+  year: categoryRows([
+    ["Apparel", 612000],
+    ["Electronics", 548000],
+    ["Home", 331000],
+    ["Beauty", 214000],
+    ["Outdoor", 126000],
+  ]),
+}
+
+export type GoalPoint = {
+  goal: string
+  value: number
+  target: number
+  unit: "currency" | "count"
+  color: string
+}
+
+export type GoalMonth = "sep" | "oct"
+
+export const goals: Record<GoalMonth, GoalPoint[]> = {
+  sep: [
+    { goal: "Revenue", value: 198000, target: 250000, unit: "currency", color: "var(--chart-1)" },
+    { goal: "Orders", value: 6850, target: 9000, unit: "count", color: "var(--chart-2)" },
+    { goal: "New customers", value: 342, target: 400, unit: "count", color: "var(--chart-4)" },
+  ],
+  oct: [
+    { goal: "Revenue", value: 236000, target: 250000, unit: "currency", color: "var(--chart-1)" },
+    { goal: "Orders", value: 8120, target: 9000, unit: "count", color: "var(--chart-2)" },
+    { goal: "New customers", value: 368, target: 400, unit: "count", color: "var(--chart-4)" },
+  ],
+}

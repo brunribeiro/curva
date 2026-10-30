@@ -29,6 +29,34 @@
         { "path": "registry/curva/ui/chart-parts.tsx", "type": "registry:ui" },
         { "path": "registry/curva/lib/curva.ts", "type": "registry:lib" }
       ]
+    },
+    {
+      "name": "donut-chart",
+      "type": "registry:ui",
+      "title": "Donut chart",
+      "description": "A donut that pours in clockwise, reshapes as values change, lifts the active segment and links to its legend.",
+      "dependencies": ["motion", "d3-shape"],
+      "devDependencies": ["@types/d3-shape"],
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/curva/ui/donut-chart.tsx", "type": "registry:ui" },
+        { "path": "registry/curva/ui/chart-parts.tsx", "type": "registry:ui" },
+        { "path": "registry/curva/lib/curva.ts", "type": "registry:lib" }
+      ]
+    },
+    {
+      "name": "radial-chart",
+      "type": "registry:ui",
+      "title": "Radial chart",
+      "description": "Concentric progress rings that fill from the outside in and count toward each goal.",
+      "dependencies": ["motion", "d3-shape"],
+      "devDependencies": ["@types/d3-shape"],
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/curva/ui/radial-chart.tsx", "type": "registry:ui" },
+        { "path": "registry/curva/ui/chart-parts.tsx", "type": "registry:ui" },
+        { "path": "registry/curva/lib/curva.ts", "type": "registry:lib" }
+      ]
     }
   ]
 }

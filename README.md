@@ -7,9 +7,11 @@ Animated chart components for [shadcn/ui](https://ui.shadcn.com). They install a
 ```bash
 npx shadcn@latest add <registry-url>/r/area-chart.json
 npx shadcn@latest add <registry-url>/r/bar-chart.json
+npx shadcn@latest add <registry-url>/r/donut-chart.json
+npx shadcn@latest add <registry-url>/r/radial-chart.json
 ```
 
-Each chart adds its own file to `components/ui/` plus the shared `components/ui/chart-parts.tsx` and `lib/curva.ts`. The charts depend on `motion`, and the area chart also needs `d3-shape`.
+Each chart adds its own file to `components/ui/` plus the shared `components/ui/chart-parts.tsx` and `lib/curva.ts`. The charts depend on `motion`, and all but the bar chart also need `d3-shape`.
 
 ## Area chart
 
@@ -59,6 +61,41 @@ It takes the same props as the area chart, except `series` (each with `key`, `la
 - **Entrance:** bars grow from the baseline with a slight overshoot in a left-to-right wave, and stacks fill from the bottom up.
 - **Morphing:** when the number of columns changes, bars slide to their new slots while new ones grow in and old ones sink away. A removed series shrinks out and the rest restack.
 - **Highlight:** a soft band glides to the active column, the other columns step back, and the tooltip follows on a spring and flips sides near the edge.
+
+## Donut chart
+
+```tsx
+import { DonutChart } from "@/components/ui/donut-chart"
+
+<DonutChart data={data} index="category" value="revenue" label="Revenue by category" />
+```
+
+| Prop | Type | Default |
+| --- | --- | --- |
+| `data`, `index`, `value`, `label` | as in the area chart; labels must be unique | |
+| `color` | key of `T` holding each segment's CSS color | theme chart colors |
+| `formatValue` | `(n) => string` | `1,234.5` |
+| `centerLabel` | what the center says when nothing is active | `Total` |
+| `legend` | legend beside the ring, below it in narrow containers | `true` |
+| `thickness` | ring thickness as a share of the radius | `0.28` |
+| `onActiveChange` | `(point, index) => void` | |
+
+- **Entrance:** segments pour in clockwise from 12 o'clock, one after another, while the total counts up.
+- **Morphing:** segments are matched by label. Changed values reshape the ring, new labels grow in from their own place, and removed ones close up while the rest take the room.
+- **Highlight:** pointing at a segment or its legend row lifts the segment, quiets the rest, and the center counts to its value and share.
+
+## Radial chart
+
+```tsx
+import { RadialChart } from "@/components/ui/radial-chart"
+
+<RadialChart data={goals} index="goal" value="value" max="target" label="Monthly goals" />
+```
+
+It takes the donut chart's props without `thickness`, plus `max` (a key of `T` or one number for every ring). `formatValue` also receives the point, so each ring can use its own unit. With nothing active, the center shows the average progress.
+
+- **Entrance:** rings fill clockwise from the outside in, settling with a slight overshoot.
+- **Changes:** each ring springs to its new progress. Progress stops at a full ring.
 
 ## Motion and reduced motion
 

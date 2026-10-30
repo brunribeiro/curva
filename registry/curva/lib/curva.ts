@@ -1,5 +1,11 @@
 import * as React from "react"
-import { useReducedMotion, useSpring, useTransform, type MotionValue } from "motion/react"
+import {
+  useMotionValue,
+  useMotionValueEvent,
+  useReducedMotion,
+  useSpring,
+  type MotionValue,
+} from "motion/react"
 
 /**
  * Curva core: the maths every chart shares.
@@ -139,6 +145,7 @@ const compactNumber = new Intl.NumberFormat("en-US", {
 
 export const formatNumber = (v: number) => fullNumber.format(v)
 export const formatCompact = (v: number) => compactNumber.format(v)
+export const formatPercent = (v: number) => `${Math.round(v)}%`
 
 /** Default series colors, cycling through the theme's five chart colors. */
 export const seriesColor = (i: number) => `var(--chart-${(i % 5) + 1})`
@@ -183,10 +190,18 @@ export function useFollow(target: number, instant = false, config = SLIDE): Moti
   return value
 }
 
-/** A formatted number that counts to each new value. */
+/**
+ * A formatted number that counts to each new value. The text always uses the
+ * latest `format`, even when the format changes while the value stays put.
+ */
 export function useCount(value: number, format: (v: number) => string, instant = false) {
   const spring = useFollow(value, instant, COUNT)
-  return useTransform(spring, (v) => format(v))
+  const text = useMotionValue(format(value))
+  useMotionValueEvent(spring, "change", (v) => text.set(format(v)))
+  React.useEffect(() => {
+    text.set(format(spring.get()))
+  }, [format, spring, text])
+  return text
 }
 
 /**
