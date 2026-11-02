@@ -1,6 +1,14 @@
 import { ChannelsCard, OrdersCard } from "@/components/site/bar-cards"
 import { DailyCard, FlowCard, GrowthCard, TicketCard } from "@/components/site/expressive-cards"
 import { InstallCommand } from "@/components/site/install-command"
+import {
+  BusyDayCard,
+  PageLoadCard,
+  StoresCard,
+  TopItemsCard,
+  TrendCard,
+  UptimeCard,
+} from "@/components/site/operations-cards"
 import { RevenueCard } from "@/components/site/revenue-card"
 import { FunnelCard, KpiRow, ScoreCard, SourcesCard } from "@/components/site/scorecard-cards"
 import { CategoryCard, GoalsCard } from "@/components/site/round-cards"
@@ -148,6 +156,31 @@ export default function Home() {
               <SourcesCard />
             </div>
             <FunnelCard />
+          </div>
+        </section>
+
+        <section className="pt-20">
+          <h2 className="text-2xl font-semibold tracking-tight">Operations dashboards</h2>
+          <p className="mt-2 max-w-xl text-pretty text-muted-foreground">
+            A period against the last with what changed, a day slot by slot, the days a store was
+            taking orders, the leaders, the before and after, and how slow the slow end is.
+          </p>
+          <div className="mt-6 max-w-xl">
+            <InstallCommand
+              items={["area-chart", "combo-chart", "status-timeline", "bar-list", "dumbbell-chart", "percentile-chart"]}
+            />
+          </div>
+          <div className="mt-8 grid gap-4">
+            <TrendCard />
+            <BusyDayCard />
+            <div className="grid gap-4 lg:grid-cols-2">
+              <UptimeCard />
+              <TopItemsCard />
+            </div>
+            <div className="grid gap-4 lg:grid-cols-2">
+              <StoresCard />
+              <PageLoadCard />
+            </div>
           </div>
         </section>
 

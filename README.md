@@ -21,9 +21,14 @@ npx shadcn@latest add <registry-url>/r/sparkline.json
 npx shadcn@latest add <registry-url>/r/radar-chart.json
 npx shadcn@latest add <registry-url>/r/waffle-chart.json
 npx shadcn@latest add <registry-url>/r/funnel-chart.json
+npx shadcn@latest add <registry-url>/r/combo-chart.json
+npx shadcn@latest add <registry-url>/r/status-timeline.json
+npx shadcn@latest add <registry-url>/r/bar-list.json
+npx shadcn@latest add <registry-url>/r/dumbbell-chart.json
+npx shadcn@latest add <registry-url>/r/percentile-chart.json
 ```
 
-Each chart adds its own file to `components/ui/` plus the shared `components/ui/chart-parts.tsx` and `lib/curva.ts`. Every chart depends on `motion`. The area, donut, radial, gauge, polar bar, flow, sparkline and funnel charts also need `d3-shape`.
+Each chart adds its own file to `components/ui/` plus the shared `components/ui/chart-parts.tsx` and `lib/curva.ts`. Every chart depends on `motion`. The area, donut, radial, gauge, polar bar, flow, sparkline, funnel and combo charts also need `d3-shape`.
 
 ## Area chart
 
@@ -42,14 +47,32 @@ import { AreaChart } from "@/components/ui/area-chart"
 | `color` | any CSS color | `var(--chart-1)` |
 | `formatValue` | `(n) => string`, tooltip and screen readers | `1,234.5` |
 | `formatAxis` | `(n) => string`, y-axis | `1.2K` |
+| `previous` | key of `T`, the previous period's value at the same position | |
+| `previousLabel` | name of the previous period | `Previous period` |
+| `rising` | `"good"`, `"bad"` or `"neutral"`, colors the change | `"good"` |
+| `markers` | `{ at, label }[]`, numbered marks on the points whose label is `at` | |
 | `showXAxis` / `showYAxis` / `showGrid` | `boolean` | `true` |
 | `onActiveChange` | `(point, index) => void` | |
 
-Size it with `className` (it defaults to `h-60 w-full`).
+Size it with `className` (it defaults to `h-60 w-full`, legend included).
 
 - **Entrance:** the curve rises from the baseline in a left-to-right wave the first time it scrolls into view.
 - **Morphing:** new `data` reshapes the curve in place, even when the number of points changes and even mid-animation.
 - **Gliding:** the active point rides along the curve on a spring, the region to its right goes quiet, and the tooltip and axis labels count to their new values.
+- **Comparing:** with `previous`, a dashed line shows the previous period, and the tooltip adds its value and the change, green or red by `rising`.
+- **Markers:** each marker drops a dashed line with a numbered badge once the curve has passed it. Markers on the same point share a badge ("2,3"), the legend lists what each number means, and pointing at a legend row moves the active point there.
+
+```tsx
+<AreaChart
+  data={days}
+  index="day"
+  value="revenue"
+  previous="lastRevenue"
+  previousLabel="Previous 30 days"
+  markers={[{ at: "Oct 18", label: "Lunch combo" }]}
+  label="Revenue"
+/>
+```
 
 ## Bar chart
 
@@ -246,13 +269,107 @@ import { FunnelChart } from "@/components/ui/funnel-chart"
 
 A stream that narrows from stage to stage, each stage flat before it curves into the next, with a chip for the conversion between neighbors. The stream pours in from the left and new values reshape it in a wave. Pointing at a stage glides a highlight to it and shows how many dropped since the previous stage.
 
+## Combo chart
+
+```tsx
+import { ComboChart } from "@/components/ui/combo-chart"
+
+<ComboChart
+  data={slots}
+  index="slot"
+  bar={{ key: "orders", label: "Online orders" }}
+  line={{ key: "wait", label: "ASAP wait", format: (m) => `${m}m` }}
+  flag="full"
+  flagLabel="Slot full"
+  now="19:15"
+  bands={[{ from: "12:15", to: "12:30", label: "Paused" }]}
+  label="Online orders and ASAP wait by pickup slot"
+/>
+```
+
+Bars on the left axis and a line on the right, for two measures with different units. Bars whose `flag` is truthy take `flagColor` and show a sliver even when empty. Line values can be null where nothing was measured: the line bridges the gap, and the dots mark only real readings. `now` stands a dashed line at a point and fades the bars after it, which are still to come. `bands` shade stretches such as pauses or outages, labelled above the plot, and the tooltip names the band under the pointer. Bars grow in, then the line draws across; a new day reshapes both in a wave.
+
+## Status timeline
+
+```tsx
+import { StatusTimeline } from "@/components/ui/status-timeline"
+
+<StatusTimeline
+  data={days}
+  index="day"
+  status="state"
+  states={[
+    { value: "open", label: "Taking orders", color: "var(--chart-2)" },
+    { value: "paused", label: "Paused", color: "var(--chart-4)" },
+    { value: "none", label: "Not recorded", color: "var(--muted-foreground)", hatched: true },
+  ]}
+  detail={(d) => d.note}
+  label="Taking orders, last 30 days"
+/>
+```
+
+One bar per period, colored by its state, like an uptime page. Bars rise in a sweep, a hatched state reads as missing data, and the legend counts the days in each state. Pointing at a legend row brings that state's days forward; pointing at a bar shows its date, state and `detail`.
+
+## Bar list
+
+```tsx
+import { BarList } from "@/components/ui/bar-list"
+
+<BarList data={items} index="item" value="sold" label="Items sold" share />
+```
+
+A ranked list of labelled bars, the shape of most "top N" panels. Bars grow in from the top, and when values change the rows trade places on a spring while their numbers count. `share` adds each row's share of the total, and `sort={false}` keeps your order.
+
+## Dumbbell chart
+
+```tsx
+import { DumbbellChart } from "@/components/ui/dumbbell-chart"
+
+<DumbbellChart
+  data={stores}
+  index="store"
+  from="lastWeek"
+  to="thisWeek"
+  fromLabel="Last week"
+  toLabel="This week"
+  label="Average order by store"
+/>
+```
+
+Before and after on one row each: a hollow dot for `from`, a filled dot for `to`, and a connector colored by whether the move is good news (`rising`). The later dot travels out from the earlier one as the chart enters, and slides when the values change. The axis hugs the data instead of starting at zero. Each row ends with the change; `formatChange` replaces the default percent. Pointing at a row shows both values.
+
+## Percentile chart
+
+```tsx
+import { PercentileChart } from "@/components/ui/percentile-chart"
+
+<PercentileChart
+  data={pages}
+  index="page"
+  percentiles={[
+    { key: "p50", label: "Typical" },
+    { key: "p75", label: "Slow" },
+    { key: "p90", label: "Slowest 10%" },
+  ]}
+  zones={[
+    { upTo: 2.5, label: "Good", tone: "good" },
+    { upTo: 4, label: "Needs work", tone: "warn" },
+    { label: "Poor", tone: "bad" },
+  ]}
+  score="p75"
+  label="Page load"
+/>
+```
+
+For timings where the average hides the slow end: each row layers its percentiles from the median out, each a fainter shade, growing in one after another. `zones` tint the background and judge each row by its `score` percentile, shown as a colored value at the end of the row. Pointing at a row lists every percentile in a tooltip.
+
 ## Motion and reduced motion
 
 Each chart has one orchestrated moment, its entrance. Everything after that answers the visitor. With `prefers-reduced-motion`, every change happens instantly.
 
 ## Accessibility
 
-The chart is a focusable group. Arrow keys, Home and End walk the points, Escape clears, the active value is announced through `aria-live`, and a visually hidden table carries the full dataset.
+The chart is a focusable group. Arrow keys, Home and End walk the points (lists and rows take up and down too), Escape clears, the active value is announced through `aria-live`, and a visually hidden table carries the full dataset.
 
 ## Develop
 

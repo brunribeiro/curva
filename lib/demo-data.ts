@@ -364,3 +364,173 @@ export const sources: Record<GoalMonth, SourcePoint[]> = {
     { source: "Marketplace", orders: 1120, color: "var(--chart-5)" },
   ],
 }
+
+// Operations: a period against the last, a day slot by slot, stores and pages.
+
+const dayLabel = (offset: number) =>
+  new Date(2026, 9, 3 + offset).toLocaleString("en-US", { month: "short", day: "numeric" })
+
+export type TrendPoint = {
+  day: string
+  revenue: number
+  lastRevenue: number
+  orders: number
+  lastOrders: number
+}
+
+export const trend: TrendPoint[] = Array.from({ length: 30 }, (_, i) => {
+  const weekday = new Date(2026, 9, 3 + i).getDay()
+  const weekend = weekday === 5 || weekday === 6 ? 1 : weekday === 0 ? 0.6 : 0
+  const lift = i >= 15 ? 1 + Math.min(0.12, (i - 15) * 0.02) : 1
+  const revenue = Math.round((4800 + 1500 * weekend + 260 * Math.sin(i / 1.7) + 18 * i) * lift)
+  const lastRevenue = Math.round(4650 + 1400 * weekend + 240 * Math.sin(i / 2.1 + 1) + 6 * i)
+  return {
+    day: dayLabel(i),
+    revenue,
+    lastRevenue,
+    orders: Math.round(revenue / (27.4 + 0.6 * Math.sin(i / 3))),
+    lastOrders: Math.round(lastRevenue / 26.8),
+  }
+})
+
+export const trendMarkers = [
+  { at: dayLabel(6), label: "New menu photos" },
+  { at: dayLabel(15), label: "Lunch combo" },
+  { at: dayLabel(15), label: "Free delivery weekend" },
+  { at: dayLabel(23), label: "Price update" },
+]
+
+export type SlotPoint = { slot: string; orders: number; wait: number | null; full: boolean }
+export type BusyDay = {
+  now?: string
+  bands: { from: string; to: string; label: string }[]
+  slots: SlotPoint[]
+}
+
+const gauss = (x: number, mu: number, sigma: number) => Math.exp(-((x - mu) ** 2) / (2 * sigma ** 2))
+const clock = (m: number) => `${Math.floor(m / 60)}:${String(m % 60).padStart(2, "0")}`
+/** Pickup slots every 15 minutes, 11:00 to 21:45. */
+const slotMinutes = Array.from({ length: 44 }, (_, i) => 660 + i * 15)
+
+export const busyDays: Record<"today" | "yesterday", BusyDay> = {
+  today: {
+    now: "19:15",
+    bands: [
+      { from: "12:15", to: "12:30", label: "Paused" },
+      { from: "17:30", to: "18:15", label: "Margherita sold out" },
+    ],
+    slots: slotMinutes.map((m) => {
+      const raw = 1.5 + 10.5 * gauss(m, 750, 38) + 13 * gauss(m, 1140, 50) + 1.6 * Math.sin(m / 17)
+      const later = m > 1155
+      const paused = m >= 735 && m <= 750
+      const orders = Math.max(0, Math.round(raw * (later ? 0.35 : paused ? 0.3 : 1)))
+      const unmeasured = m < 690 || later || (m >= 840 && m <= 870)
+      return {
+        slot: clock(m),
+        orders,
+        wait: unmeasured ? null : Math.round(8 + raw * 1.6 + 2 * Math.sin(m / 23)),
+        full: !later && orders >= 11,
+      }
+    }),
+  },
+  yesterday: {
+    bands: [{ from: "13:00", to: "13:45", label: "Offline" }],
+    slots: slotMinutes.map((m) => {
+      const raw = 1 + 8.5 * gauss(m, 760, 45) + 11.5 * gauss(m, 1155, 60) + 1.4 * Math.sin(m / 13)
+      const offline = m >= 780 && m <= 825
+      const orders = offline ? 0 : Math.max(0, Math.round(raw))
+      return {
+        slot: clock(m),
+        orders,
+        wait: m < 720 || offline ? null : Math.round(7 + raw * 1.4 + 2 * Math.sin(m / 19)),
+        full: orders >= 11,
+      }
+    }),
+  },
+}
+
+export type StoreDay = { day: string; state: "open" | "short" | "long" | "none"; detail: string }
+
+const minutes = (m: number) => (m >= 60 ? `${Math.floor(m / 60)} h ${m % 60} min` : `${m} min`)
+const storeDays = (pattern: string[]): StoreDay[] =>
+  pattern
+    .join("")
+    .padEnd(30, "o")
+    .slice(0, 30)
+    .split("")
+    .map((c, i) => {
+      const state = c === "s" ? "short" : c === "l" ? "long" : c === "n" ? "none" : "open"
+      const detail =
+        state === "short"
+          ? `Paused ${minutes(10 + ((i * 7) % 18))}`
+          : state === "long"
+            ? `Paused ${minutes(45 + ((i * 13) % 50))}`
+            : state === "none"
+              ? "Not recorded yet"
+              : "Taking orders all day"
+      return { day: dayLabel(i), state, detail }
+    })
+
+export const storeHistory: Record<"downtown" | "riverside", StoreDay[]> = {
+  downtown: storeDays(["nn", "oooooo", "s", "oooooooooo", "l", "oooo", "s", "ooooo"]),
+  riverside: storeDays(["n", "oooo", "s", "ooo", "l", "s", "ooooooo", "l", "oooooo", "s", "ooo", "s"]),
+}
+
+export type ItemSales = { item: string; sold: number }
+
+export const topItems: Record<"week" | "last", ItemSales[]> = {
+  week: [
+    { item: "Margherita", sold: 412 },
+    { item: "Pepperoni", sold: 388 },
+    { item: "Garlic knots", sold: 301 },
+    { item: "Spicy honey", sold: 264 },
+    { item: "Caesar salad", sold: 189 },
+    { item: "Tiramisu", sold: 142 },
+  ],
+  last: [
+    { item: "Pepperoni", sold: 401 },
+    { item: "Margherita", sold: 366 },
+    { item: "Caesar salad", sold: 244 },
+    { item: "Garlic knots", sold: 238 },
+    { item: "Tiramisu", sold: 171 },
+    { item: "Spicy honey", sold: 120 },
+  ],
+}
+
+export type StoreWeek = {
+  store: string
+  lastAverage: number
+  average: number
+  lastOrders: number
+  orders: number
+}
+
+export const storeWeeks: StoreWeek[] = [
+  { store: "Downtown", lastAverage: 27.4, average: 29.1, lastOrders: 1240, orders: 1318 },
+  { store: "Riverside", lastAverage: 31.2, average: 30.4, lastOrders: 860, orders: 902 },
+  { store: "Midtown", lastAverage: 24.8, average: 26.9, lastOrders: 1105, orders: 1032 },
+  { store: "Harbor", lastAverage: 33.5, average: 35.2, lastOrders: 640, orders: 711 },
+  { store: "Airport", lastAverage: 22.1, average: 21.6, lastOrders: 1420, orders: 1388 },
+  { store: "University", lastAverage: 19.9, average: 22.3, lastOrders: 980, orders: 1150 },
+]
+
+export type PageLoad = { page: string; p50: number; p75: number; p90: number }
+
+export const pageLoads: Record<"mobile" | "desktop", PageLoad[]> = {
+  mobile: [
+    { page: "Home", p50: 1.8, p75: 2.4, p90: 3.6 },
+    { page: "Menu", p50: 2.3, p75: 3.1, p90: 4.8 },
+    { page: "Item", p50: 1.4, p75: 1.9, p90: 2.9 },
+    { page: "Cart", p50: 1.1, p75: 1.5, p90: 2.2 },
+    { page: "Checkout", p50: 2.9, p75: 4.3, p90: 6.1 },
+    { page: "Order status", p50: 1.2, p75: 1.7, p90: 2.6 },
+  ],
+  desktop: [
+    { page: "Home", p50: 1.1, p75: 1.5, p90: 2.3 },
+    { page: "Menu", p50: 1.5, p75: 2.0, p90: 3.0 },
+    { page: "Item", p50: 0.9, p75: 1.2, p90: 1.8 },
+    { page: "Cart", p50: 0.8, p75: 1.0, p90: 1.5 },
+    { page: "Checkout", p50: 1.9, p75: 2.7, p90: 3.9 },
+    { page: "Order status", p50: 0.8, p75: 1.1, p90: 1.7 },
+  ],
+}

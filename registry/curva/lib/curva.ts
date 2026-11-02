@@ -128,10 +128,44 @@ export function niceDomain(values: readonly number[]): Domain {
     niceLo = Math.floor(lo / step) * step
   }
 
-  const ticks = Array.from({ length: DIVISIONS + 1 }, (_, k) =>
-    Number((niceLo + k * step).toPrecision(12))
+  return domainOf(niceLo, step)
+}
+
+/**
+ * Like niceDomain, but hugs the values instead of reaching down to zero, and
+ * picks three to five steps, whichever fits tightest.
+ */
+export function niceSpan(values: readonly number[]): Domain {
+  if (values.length === 0) return niceDomain(values)
+  let lo = Math.min(...values)
+  let hi = Math.max(...values)
+  if (hi === lo) {
+    const pad = Math.abs(lo) * 0.1 || 1
+    lo -= pad
+    hi += pad
+  }
+
+  const fit = (divisions: number) => {
+    let step = niceStep((hi - lo) / divisions)
+    let niceLo = Math.floor(lo / step) * step
+    while (niceLo + step * divisions < hi) {
+      step = niceStep(step * 1.01)
+      niceLo = Math.floor(lo / step) * step
+    }
+    return { lo: niceLo, step, divisions }
+  }
+  const best = [fit(3), fit(5)].reduce(
+    (a, b) => (b.step * b.divisions < a.step * a.divisions - 1e-9 ? b : a),
+    fit(4)
   )
-  return { lo: ticks[0], hi: ticks[DIVISIONS], ticks }
+  return domainOf(best.lo, best.step, best.divisions)
+}
+
+function domainOf(lo: number, step: number, divisions = DIVISIONS): Domain {
+  const ticks = Array.from({ length: divisions + 1 }, (_, k) =>
+    Number((lo + k * step).toPrecision(12))
+  )
+  return { lo: ticks[0], hi: ticks[divisions], ticks }
 }
 
 /** Splits `count` units (ticks, cells) by share, largest remainder first; any non-zero part gets one. */
@@ -169,6 +203,21 @@ const compactNumber = new Intl.NumberFormat("en-US", {
 export const formatNumber = (v: number) => fullNumber.format(v)
 export const formatCompact = (v: number) => compactNumber.format(v)
 export const formatPercent = (v: number) => `${Math.round(v)}%`
+
+const signedPercent = new Intl.NumberFormat("en-US", {
+  style: "percent",
+  maximumFractionDigits: 1,
+  signDisplay: "exceptZero",
+})
+/** A change as a signed percent: 0.124 reads +12.4%. */
+export const formatChange = (v: number) => signedPercent.format(v)
+
+/** Whether a rise is good news (revenue), bad news (wait times) or neither. */
+export type Rising = "good" | "bad" | "neutral"
+
+/** The relative change from `previous` to `current`, or null with nothing to compare against. */
+export const changeOf = (current: number, previous: number) =>
+  previous === 0 || !Number.isFinite(previous) ? null : current / previous - 1
 
 /** Default series colors, cycling through the theme's five chart colors. */
 export const seriesColor = (i: number) => `var(--chart-${(i % 5) + 1})`
@@ -227,12 +276,19 @@ export function useCount(value: number, format: (v: number) => string, instant =
   return text
 }
 
+const VERTICAL_KEYS: Record<string, string> = { ArrowDown: "ArrowRight", ArrowUp: "ArrowLeft" }
+
 /**
  * The point the visitor is on, from pointer, touch or keyboard. `fresh` is
  * true when they have just arrived, so highlights appear in place instead of
- * travelling from wherever they last were.
+ * travelling from wherever they last were. Lists pass `vertical` so the up
+ * and down arrows walk them too.
  */
-export function useActivePoint(count: number, onChange?: (index: number | null) => void) {
+export function useActivePoint(
+  count: number,
+  onChange?: (index: number | null) => void,
+  { vertical = false }: { vertical?: boolean } = {}
+) {
   const [active, setActive] = React.useState<number | null>(null)
   const [last, setLast] = React.useState(0)
   const [fresh, setFresh] = React.useState(true)
@@ -250,7 +306,8 @@ export function useActivePoint(count: number, onChange?: (index: number | null) 
   const onKeyDown = (e: React.KeyboardEvent) => {
     if (count === 0) return
     let k = activeIndex
-    switch (e.key) {
+    const key = vertical ? (VERTICAL_KEYS[e.key] ?? e.key) : e.key
+    switch (key) {
       case "ArrowRight":
         k = k === null ? 0 : Math.min(k + 1, count - 1)
         break

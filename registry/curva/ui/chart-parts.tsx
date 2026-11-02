@@ -4,7 +4,7 @@ import * as React from "react"
 import { AnimatePresence, motion, type MotionStyle } from "motion/react"
 
 import { cn } from "@/lib/utils"
-import { useCount, type Frame } from "@/registry/curva/lib/curva"
+import { formatChange, useCount, type Frame, type Rising } from "@/registry/curva/lib/curva"
 
 /** Pieces every Curva chart shares: grid, axes, tooltip and the accessible description. */
 
@@ -34,10 +34,13 @@ export function YAxis({
   ticks,
   frame,
   format,
+  side = "left",
 }: {
   ticks: readonly number[]
   frame: Frame
   format: (value: number) => string
+  /** A second scale reads on the right. */
+  side?: "left" | "right"
 }) {
   return (
     <g>
@@ -45,8 +48,9 @@ export function YAxis({
         <TickLabel
           key={k}
           value={t}
-          x={frame.left - 10}
+          x={side === "left" ? frame.left - 10 : frame.right + 10}
           y={frame.top + (1 - k / (ticks.length - 1)) * frame.h}
+          anchor={side === "left" ? "end" : "start"}
           format={format}
         />
       ))}
@@ -58,11 +62,13 @@ function TickLabel({
   value,
   x,
   y,
+  anchor,
   format,
 }: {
   value: number
   x: number
   y: number
+  anchor: "start" | "end"
   format: (value: number) => string
 }) {
   const text = useCount(value, format)
@@ -71,7 +77,7 @@ function TickLabel({
       x={x}
       y={y}
       dy="0.32em"
-      textAnchor="end"
+      textAnchor={anchor}
       className="fill-muted-foreground text-[11px] tabular-nums"
     >
       {text}
@@ -130,6 +136,8 @@ export type TooltipRow = {
   label: string
   value: number
   color?: string
+  /** Formats this row when its unit differs from the others. */
+  format?: (value: number) => string
 }
 
 export function ChartTooltip({
@@ -139,6 +147,7 @@ export function ChartTooltip({
   active,
   fresh,
   format,
+  footer,
   style,
 }: {
   ref?: React.Ref<HTMLDivElement>
@@ -147,6 +156,8 @@ export function ChartTooltip({
   active: boolean
   fresh: boolean
   format: (value: number) => string
+  /** Anything after the rows, such as a change or a note. */
+  footer?: React.ReactNode
   style?: MotionStyle
 }) {
   return (
@@ -169,13 +180,46 @@ export function ChartTooltip({
           <span className="text-muted-foreground">{row.label}</span>
           <Count
             value={row.value}
-            format={format}
+            format={row.format ?? format}
             instant={fresh}
             className="ml-auto pl-4 font-medium"
           />
         </div>
       ))}
+      {footer}
     </motion.div>
+  )
+}
+
+/** A change as a colored pill: green when it's good news, red when it's bad. */
+export function ChangeBadge({
+  change,
+  rising = "good",
+  text,
+  className,
+}: {
+  change: number | null
+  rising?: Rising
+  /** Replaces the default signed percent. */
+  text?: string
+  className?: string
+}) {
+  if (change === null || !Number.isFinite(change)) return null
+  const good = rising === "neutral" || change === 0 ? null : change > 0 === (rising === "good")
+  return (
+    <span
+      className={cn(
+        "inline-block rounded-full px-1.5 py-0.5 text-[11px] leading-4 font-medium whitespace-nowrap tabular-nums",
+        good === null
+          ? "bg-muted text-muted-foreground"
+          : good
+            ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
+            : "bg-rose-500/10 text-rose-700 dark:text-rose-400",
+        className
+      )}
+    >
+      {text ?? formatChange(change)}
+    </span>
   )
 }
 

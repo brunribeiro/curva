@@ -7,7 +7,7 @@
       "name": "area-chart",
       "type": "registry:ui",
       "title": "Area chart",
-      "description": "An area chart that rises in on view, morphs between datasets and glides a spring-driven point along the curve.",
+      "description": "An area chart that rises in on view, morphs between datasets and glides a spring-driven point along the curve, with an optional previous period and markers for what changed.",
       "dependencies": [
         "motion",
         "d3-shape"
@@ -439,6 +439,140 @@
       "files": [
         {
           "path": "registry/curva/ui/funnel-chart.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/ui/chart-parts.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/lib/curva.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "combo-chart",
+      "type": "registry:ui",
+      "title": "Combo chart",
+      "description": "Bars and a line on two axes, with flagged bars, a now line and shaded stretches such as pauses.",
+      "dependencies": [
+        "motion",
+        "d3-shape"
+      ],
+      "devDependencies": [
+        "@types/d3-shape"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/curva/ui/combo-chart.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/ui/chart-parts.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/lib/curva.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "status-timeline",
+      "type": "registry:ui",
+      "title": "Status timeline",
+      "description": "One bar per day colored by state, with counts per state and a tooltip for each day.",
+      "dependencies": [
+        "motion"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/curva/ui/status-timeline.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/ui/chart-parts.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/lib/curva.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "bar-list",
+      "type": "registry:ui",
+      "title": "Bar list",
+      "description": "A ranked list of labelled bars that trade places when values change.",
+      "dependencies": [
+        "motion"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/curva/ui/bar-list.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/ui/chart-parts.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/lib/curva.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "dumbbell-chart",
+      "type": "registry:ui",
+      "title": "Dumbbell chart",
+      "description": "Before and after on one row each, the later dot travelling out from the earlier one.",
+      "dependencies": [
+        "motion"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/curva/ui/dumbbell-chart.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/ui/chart-parts.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/lib/curva.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "percentile-chart",
+      "type": "registry:ui",
+      "title": "Percentile chart",
+      "description": "Typical, slow and slowest values layered per row, judged against good, needs work and poor zones.",
+      "dependencies": [
+        "motion"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/curva/ui/percentile-chart.tsx",
           "type": "registry:ui"
         },
         {
