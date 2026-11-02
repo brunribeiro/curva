@@ -338,6 +338,118 @@
           "type": "registry:lib"
         }
       ]
+    },
+    {
+      "name": "sparkline",
+      "type": "registry:ui",
+      "title": "Sparkline",
+      "description": "A compact line or bar trend that draws in, morphs between periods and hands the scrubbed point to a headline.",
+      "dependencies": [
+        "motion",
+        "d3-shape"
+      ],
+      "devDependencies": [
+        "@types/d3-shape"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/curva/ui/sparkline.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/ui/chart-parts.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/lib/curva.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "radar-chart",
+      "type": "registry:ui",
+      "title": "Radar chart",
+      "description": "Series polygons that unfold around their axes, morph between periods and compare at a glance.",
+      "dependencies": [
+        "motion"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/curva/ui/radar-chart.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/ui/chart-parts.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/lib/curva.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "waffle-chart",
+      "type": "registry:ui",
+      "title": "Waffle chart",
+      "description": "A grid of squares, one per share, that sweeps in diagonally and regroups as values change.",
+      "dependencies": [
+        "motion"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/curva/ui/waffle-chart.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/ui/chart-parts.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/lib/curva.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "funnel-chart",
+      "type": "registry:ui",
+      "title": "Funnel chart",
+      "description": "A stream that narrows stage by stage, with conversion chips and a highlight that glides to the active stage.",
+      "dependencies": [
+        "motion",
+        "d3-shape"
+      ],
+      "devDependencies": [
+        "@types/d3-shape"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/curva/ui/funnel-chart.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/ui/chart-parts.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/lib/curva.ts",
+          "type": "registry:lib"
+        }
+      ]
     }
   ]
 }

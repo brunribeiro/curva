@@ -134,6 +134,29 @@ export function niceDomain(values: readonly number[]): Domain {
   return { lo: ticks[0], hi: ticks[DIVISIONS], ticks }
 }
 
+/** Splits `count` units (ticks, cells) by share, largest remainder first; any non-zero part gets one. */
+export function allocate(values: readonly number[], count: number) {
+  const total = values.reduce((a, b) => a + b, 0)
+  if (total <= 0) return values.map(() => 0)
+  const exact = values.map((v) => (v / total) * count)
+  const units = exact.map((e, k) => (values[k] > 0 ? Math.max(1, Math.floor(e)) : 0))
+  let left = count - units.reduce((a, b) => a + b, 0)
+  const order = exact.map((e, k) => [e - Math.floor(e), k]).sort((a, b) => b[0] - a[0])
+  for (let i = 0; left > 0 && order.length > 0; i = (i + 1) % order.length) {
+    const k = order[i][1]
+    if (values[k] > 0) {
+      units[k]++
+      left--
+    }
+  }
+  while (left < 0) {
+    const k = units.indexOf(Math.max(...units))
+    units[k]--
+    left++
+  }
+  return units
+}
+
 export const normalize = (values: readonly number[], domain: Domain) =>
   values.map((v) => (v - domain.lo) / (domain.hi - domain.lo))
 

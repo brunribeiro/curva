@@ -2,6 +2,7 @@ import { ChannelsCard, OrdersCard } from "@/components/site/bar-cards"
 import { DailyCard, FlowCard, GrowthCard, TicketCard } from "@/components/site/expressive-cards"
 import { InstallCommand } from "@/components/site/install-command"
 import { RevenueCard } from "@/components/site/revenue-card"
+import { FunnelCard, KpiRow, ScoreCard, SourcesCard } from "@/components/site/scorecard-cards"
 import { CategoryCard, GoalsCard } from "@/components/site/round-cards"
 import { BudgetCard, BusyCard, ExpensesCard, HoursCard } from "@/components/site/shape-cards"
 import { ThemeToggle } from "@/components/site/theme-toggle"
@@ -128,6 +129,25 @@ export default function Home() {
             <div className="lg:col-span-2">
               <DailyCard />
             </div>
+          </div>
+        </section>
+
+        <section className="pt-20">
+          <h2 className="text-2xl font-semibold tracking-tight">Scorecards and funnels</h2>
+          <p className="mt-2 max-w-xl text-pretty text-muted-foreground">
+            Sparklines that hand their numbers to a headline, a radar for comparing, a waffle for
+            dividing and a funnel for converting.
+          </p>
+          <div className="mt-6 max-w-xl">
+            <InstallCommand items={["sparkline", "radar-chart", "waffle-chart", "funnel-chart"]} />
+          </div>
+          <div className="mt-8 grid gap-4">
+            <KpiRow />
+            <div className="grid gap-4 lg:grid-cols-2">
+              <ScoreCard />
+              <SourcesCard />
+            </div>
+            <FunnelCard />
           </div>
         </section>
 

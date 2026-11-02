@@ -17,9 +17,13 @@ npx shadcn@latest add <registry-url>/r/flow-chart.json
 npx shadcn@latest add <registry-url>/r/capsule-bar-chart.json
 npx shadcn@latest add <registry-url>/r/dot-matrix-chart.json
 npx shadcn@latest add <registry-url>/r/range-histogram.json
+npx shadcn@latest add <registry-url>/r/sparkline.json
+npx shadcn@latest add <registry-url>/r/radar-chart.json
+npx shadcn@latest add <registry-url>/r/waffle-chart.json
+npx shadcn@latest add <registry-url>/r/funnel-chart.json
 ```
 
-Each chart adds its own file to `components/ui/` plus the shared `components/ui/chart-parts.tsx` and `lib/curva.ts`. Every chart depends on `motion`. The area, donut, radial, gauge, polar bar and flow charts also need `d3-shape`.
+Each chart adds its own file to `components/ui/` plus the shared `components/ui/chart-parts.tsx` and `lib/curva.ts`. Every chart depends on `motion`. The area, donut, radial, gauge, polar bar, flow, sparkline and funnel charts also need `d3-shape`.
 
 ## Area chart
 
@@ -192,6 +196,55 @@ import { RangeHistogram } from "@/components/ui/range-histogram"
 ```
 
 A dense histogram with a brush. Sweep across the bars to pick a range, drag the window to move it, or drag either handle. The handles are sliders, so arrow keys move them (Shift for 5, Page Up and Page Down for a tenth). A summary rides above the window with the range's total and its change from first to last. `defaultRange` sets the starting selection, and `onRangeChange` reports each change with the selected points.
+
+## Sparkline
+
+```tsx
+import { Sparkline } from "@/components/ui/sparkline"
+
+<Sparkline data={days} index="day" value="revenue" label="Revenue" onActiveChange={setHovered} />
+```
+
+A small trend with no axes, made for KPI cards: a smooth line over a soft fill, or thin bars (`variant="bars"`). The line draws in once, a dot rests on the last point and glides along the line as the visitor scrubs, and a new period morphs in place. Values fill the height whatever their range, because a sparkline shows shape. Pass `onActiveChange` to hand the scrubbed point to a headline number. It's exposed as one image whose label reads the first and last values.
+
+## Radar chart
+
+```tsx
+import { RadarChart } from "@/components/ui/radar-chart"
+
+<RadarChart
+  data={axes}
+  index="axis"
+  series={[
+    { key: "downtown", label: "Downtown" },
+    { key: "riverside", label: "Riverside" },
+  ]}
+  max={100}
+  label="Location scorecard"
+/>
+```
+
+One point per axis, clockwise from 12 o'clock, with a polygon per series. Each shape unfolds around the axes, and new values morph each vertex in a wave. Pointing near an axis lights its spoke, enlarges its vertices and lists every series in a tooltip. Pointing at a legend row brings its series forward. `max` sets the outer ring; by default it's a round number above the largest value.
+
+## Waffle chart
+
+```tsx
+import { WaffleChart } from "@/components/ui/waffle-chart"
+
+<WaffleChart data={sources} index="source" value="orders" label="Orders by source" />
+```
+
+A grid of squares (`cells`, default 100, in rows of `columns`, default 10), each owned by a part in proportion to its share. Cells sweep in diagonally, and a change pops the regrouped cells out and back in. Pointing at a cell or a legend row brings its part forward.
+
+## Funnel chart
+
+```tsx
+import { FunnelChart } from "@/components/ui/funnel-chart"
+
+<FunnelChart data={stages} index="stage" value="people" label="Ordering funnel" />
+```
+
+A stream that narrows from stage to stage, each stage flat before it curves into the next, with a chip for the conversion between neighbors. The stream pours in from the left and new values reshape it in a wave. Pointing at a stage glides a highlight to it and shows how many dropped since the previous stage.
 
 ## Motion and reduced motion
 

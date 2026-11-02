@@ -235,3 +235,132 @@ export const daily: DailyPoint[] = Array.from({ length: 120 }, (_, i) => {
     revenue: Math.round((4200 + 22 * i) * weekend * noise),
   }
 })
+
+export type KpiRange = "7d" | "30d" | "90d"
+export type KpiPoint = { day: string; value: number }
+export type Kpi = {
+  key: string
+  label: string
+  kind: "currency" | "count" | "ticket"
+  /** How the period rolls up into the headline number. */
+  rollup: "sum" | "mean"
+  variant: "line" | "bars"
+  color: string
+  series: Record<KpiRange, KpiPoint[]>
+}
+
+const kpiSeries = (days: number, base: number, trend: number, seed: number): KpiPoint[] =>
+  Array.from({ length: days }, (_, i) => {
+    const date = new Date(2026, 9, 31 - (days - 1 - i))
+    const weekday = date.getDay()
+    const weekend = weekday === 5 || weekday === 6 ? 1.3 : 1
+    const wobble = 0.86 + 0.28 * Math.abs(Math.sin((i + seed) * 1.93) * Math.cos((i + seed) * 0.61))
+    return {
+      day: date.toLocaleString("en-US", { month: "short", day: "numeric" }),
+      value: base * (1 + trend * (i / days)) * weekend * wobble,
+    }
+  })
+
+const kpiRanges = (base: number, trend: number, seed: number, round: (v: number) => number) =>
+  Object.fromEntries(
+    ([7, 30, 90] as const).map((days) => [
+      `${days}d`,
+      kpiSeries(days, base, trend, seed).map((p) => ({ ...p, value: round(p.value) })),
+    ])
+  ) as Record<KpiRange, KpiPoint[]>
+
+export const kpis: Kpi[] = [
+  {
+    key: "revenue",
+    label: "Revenue",
+    kind: "currency",
+    rollup: "sum",
+    variant: "line",
+    color: "var(--chart-1)",
+    series: kpiRanges(5200, 0.24, 1, Math.round),
+  },
+  {
+    key: "orders",
+    label: "Orders",
+    kind: "count",
+    rollup: "sum",
+    variant: "bars",
+    color: "var(--chart-2)",
+    series: kpiRanges(210, 0.18, 4, Math.round),
+  },
+  {
+    key: "ticket",
+    label: "Average ticket",
+    kind: "ticket",
+    rollup: "mean",
+    variant: "line",
+    color: "var(--chart-4)",
+    series: kpiRanges(24.6, 0.06, 7, (v) => Math.round(v * 100) / 100),
+  },
+  {
+    key: "customers",
+    label: "New customers",
+    kind: "count",
+    rollup: "sum",
+    variant: "bars",
+    color: "var(--chart-3)",
+    series: kpiRanges(18, 0.3, 11, Math.round),
+  },
+]
+
+export type ScorePoint = { axis: string; downtown: number; riverside: number }
+
+export const scores: Record<"now" | "before", ScorePoint[]> = {
+  now: [
+    { axis: "Speed", downtown: 86, riverside: 64 },
+    { axis: "Quality", downtown: 78, riverside: 88 },
+    { axis: "Value", downtown: 70, riverside: 82 },
+    { axis: "Service", downtown: 91, riverside: 72 },
+    { axis: "Cleanliness", downtown: 84, riverside: 90 },
+    { axis: "Ambience", downtown: 62, riverside: 86 },
+  ],
+  before: [
+    { axis: "Speed", downtown: 72, riverside: 58 },
+    { axis: "Quality", downtown: 74, riverside: 81 },
+    { axis: "Value", downtown: 76, riverside: 77 },
+    { axis: "Service", downtown: 80, riverside: 69 },
+    { axis: "Cleanliness", downtown: 79, riverside: 84 },
+    { axis: "Ambience", downtown: 60, riverside: 79 },
+  ],
+}
+
+export type FunnelPoint = { stage: string; people: number }
+
+export const funnels: Record<"web" | "app", FunnelPoint[]> = {
+  web: [
+    { stage: "Visited menu", people: 12480 },
+    { stage: "Added to cart", people: 6210 },
+    { stage: "Started checkout", people: 3940 },
+    { stage: "Paid", people: 3380 },
+  ],
+  app: [
+    { stage: "Visited menu", people: 8960 },
+    { stage: "Added to cart", people: 6120 },
+    { stage: "Started checkout", people: 4870 },
+    { stage: "Paid", people: 4510 },
+  ],
+}
+
+export type SourcePoint = { source: string; orders: number; color: string }
+
+export const sources: Record<GoalMonth, SourcePoint[]> = {
+  sep: [
+    { source: "Website", orders: 2840, color: "var(--chart-1)" },
+    { source: "App", orders: 2210, color: "var(--chart-2)" },
+    { source: "Walk-in", orders: 1630, color: "var(--chart-3)" },
+    { source: "Phone", orders: 720, color: "var(--chart-4)" },
+    { source: "Marketplace", orders: 940, color: "var(--chart-5)" },
+  ],
+  oct: [
+    { source: "Website", orders: 2690, color: "var(--chart-1)" },
+    { source: "App", orders: 3180, color: "var(--chart-2)" },
+    { source: "Walk-in", orders: 1580, color: "var(--chart-3)" },
+    { source: "Phone", orders: 540, color: "var(--chart-4)" },
+    { source: "Marketplace", orders: 1120, color: "var(--chart-5)" },
+  ],
+}

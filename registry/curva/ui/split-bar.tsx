@@ -5,6 +5,7 @@ import { AnimatePresence, motion, useInView, useReducedMotion } from "motion/rea
 
 import { cn } from "@/lib/utils"
 import {
+  allocate,
   clamp,
   formatNumber,
   formatPercent,
@@ -46,29 +47,6 @@ const SLIDE = { type: "spring", stiffness: 300, damping: 32 } as const
 const texture = (i: number) => {
   const x = Math.sin(i * 12.9898) * 43758.5453
   return 0.55 + 0.45 * (x - Math.floor(x))
-}
-
-/** Splits `count` ticks by share, largest remainder first; any non-zero part gets one. */
-function allocate(values: readonly number[], count: number) {
-  const total = values.reduce((a, b) => a + b, 0)
-  if (total <= 0) return values.map(() => 0)
-  const exact = values.map((v) => (v / total) * count)
-  const ticks = exact.map((e, k) => (values[k] > 0 ? Math.max(1, Math.floor(e)) : 0))
-  let left = count - ticks.reduce((a, b) => a + b, 0)
-  const order = exact.map((e, k) => [e - Math.floor(e), k]).sort((a, b) => b[0] - a[0])
-  for (let i = 0; left > 0 && order.length > 0; i = (i + 1) % order.length) {
-    const k = order[i][1]
-    if (values[k] > 0) {
-      ticks[k]++
-      left--
-    }
-  }
-  while (left < 0) {
-    const k = ticks.indexOf(Math.max(...ticks))
-    ticks[k]--
-    left++
-  }
-  return ticks
 }
 
 export function SplitBar<T extends Datum>({
