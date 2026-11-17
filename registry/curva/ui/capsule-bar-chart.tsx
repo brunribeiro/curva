@@ -23,11 +23,9 @@ export type CapsuleBarChartProps<T extends Datum> = {
   value: keyof T & string
   /** Accessible name of the chart. */
   label: string
-  /** Bottom color of the lit capsule. */
+  /** Color of the capsules and their tracks. */
   color?: string
-  /** Top color of the lit capsule. */
-  accent?: string
-  /** Which capsule glows while nothing is active. */
+  /** Which capsule stands out while nothing is active. */
   highlight?: "max" | "last" | number
   formatValue?: (value: number) => string
   className?: string
@@ -37,11 +35,14 @@ export type CapsuleBarChartProps<T extends Datum> = {
 
 const TOP = 30
 const LABELS = 24
-const MAX_WIDTH = 56
-/** Liquid rises with a little slosh. */
-const RISE = { type: "spring", stiffness: 130, damping: 13 } as const
-const RISE_STEP = 0.07
-const MORPH = { type: "spring", stiffness: 180, damping: 20 } as const
+const MAX_WIDTH = 48
+/** Capsules grow from the baseline in a left-to-right wave, like the bar chart. */
+const GROW = { type: "spring", stiffness: 240, damping: 24, mass: 0.9 } as const
+const GROW_STEP = 0.06
+const MORPH = { type: "spring", stiffness: 200, damping: 24 } as const
+/** How far the other capsules step back from the one that stands out. */
+const QUIET = 0.38
+const TRACK = 0.08
 
 export function CapsuleBarChart<T extends Datum>({
   data,
@@ -49,13 +50,11 @@ export function CapsuleBarChart<T extends Datum>({
   value,
   label,
   color = "var(--chart-1)",
-  accent = "var(--chart-4)",
   highlight = "max",
   formatValue = formatNumber,
   className,
   onActiveChange,
 }: CapsuleBarChartProps<T>) {
-  const id = React.useId().replace(/:/g, "")
   const rootRef = React.useRef<HTMLDivElement>(null)
   const tipRef = React.useRef<HTMLDivElement>(null)
   const size = useElementSize(rootRef)
@@ -89,16 +88,16 @@ export function CapsuleBarChart<T extends Datum>({
   const lit = activeIndex ?? resting
 
   const band = n > 0 ? size.width / n : 0
-  const width = Math.min(band * 0.62, MAX_WIDTH)
+  const width = Math.min(band * 0.56, MAX_WIDTH)
   const trackTop = TOP
   const trackBottom = Math.max(trackTop, size.height - LABELS)
   const trackHeight = trackBottom - trackTop
   const centerOf = (k: number) => band * (k + 0.5)
-  const liquidOf = (k: number) =>
+  const heightOf = (k: number) =>
     values[k] > 0 ? Math.max(width, (values[k] / peak) * trackHeight) : 0
 
   const pillX = useFollow(clamp(centerOf(lit) - tip.width / 2, 0, Math.max(0, size.width - tip.width)), fresh)
-  const pillY = useFollow(Math.max(0, trackBottom - liquidOf(lit) - tip.height - 8), fresh)
+  const pillY = useFollow(Math.max(0, trackBottom - heightOf(lit) - tip.height - 8), fresh)
 
   const indexAt = (clientX: number) => {
     const rect = rootRef.current?.getBoundingClientRect()
@@ -125,25 +124,14 @@ export function CapsuleBarChart<T extends Datum>({
     >
       {size.width > 0 && (
         <svg width={size.width} height={size.height} className="absolute inset-0 overflow-visible" aria-hidden>
-          <defs>
-            <linearGradient id={`${id}-lit`} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" style={{ stopColor: accent }} />
-              <stop offset="100%" style={{ stopColor: color }} />
-            </linearGradient>
-            <filter id={`${id}-glow`} x="-60%" y="-30%" width="220%" height="160%">
-              <feGaussianBlur stdDeviation={Math.max(4, width / 5)} />
-            </filter>
-          </defs>
-
           <AnimatePresence initial={false}>
             {values.map((_, k) => {
               const x = centerOf(k) - width / 2
-              const h = liquidOf(k)
+              const h = heightOf(k)
               const on = lit === k
-              const rise = inView ? { y: trackBottom - h, height: h } : { y: trackBottom, height: 0 }
               const transition = reduced
                 ? { duration: 0 }
-                : { ...(settled ? MORPH : RISE), delay: settled ? 0 : k * RISE_STEP }
+                : { ...(settled ? MORPH : GROW), delay: settled ? 0 : k * GROW_STEP }
               return (
                 <motion.g
                   key={k}
@@ -152,56 +140,27 @@ export function CapsuleBarChart<T extends Datum>({
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.25 }}
                 >
-                  {/* The glass tube. */}
-                  <rect
-                    x={x}
-                    y={trackTop}
-                    width={width}
-                    height={trackHeight}
-                    rx={width / 2}
-                    style={{
-                      fill: "color-mix(in oklab, var(--foreground) 4%, transparent)",
-                      stroke: "color-mix(in oklab, var(--foreground) 7%, transparent)",
-                    }}
-                  />
-                  {/* Its glow, then the liquid: grey at rest, the gradient when lit. */}
-                  <motion.rect
-                    x={x}
-                    width={width}
-                    rx={width / 2}
-                    fill={`url(#${id}-lit)`}
-                    filter={`url(#${id}-glow)`}
-                    initial={{ y: trackBottom, height: 0, opacity: 0 }}
-                    animate={{ ...rise, opacity: on && inView ? 0.45 : 0 }}
-                    transition={{ ...transition, opacity: { duration: 0.3 } }}
-                  />
-                  <motion.rect
-                    x={x}
-                    width={width}
-                    rx={width / 2}
-                    style={{ fill: "color-mix(in oklab, var(--foreground) 15%, transparent)" }}
-                    initial={{ y: trackBottom, height: 0 }}
-                    animate={rise}
-                    transition={transition}
-                  />
-                  <motion.rect
-                    x={x}
-                    width={width}
-                    rx={width / 2}
-                    fill={`url(#${id}-lit)`}
-                    initial={{ y: trackBottom, height: 0, opacity: 0 }}
-                    animate={{ ...rise, opacity: on ? 1 : 0 }}
-                    transition={{ ...transition, opacity: { duration: 0.3 } }}
-                  />
-                  {/* A sliver of light down the glass. */}
-                  <rect
-                    x={x + width * 0.2}
-                    y={trackTop + width * 0.35}
-                    width={Math.max(1.5, width * 0.12)}
-                    height={Math.max(0, trackHeight - width * 0.7)}
-                    rx={width * 0.06}
-                    className="fill-white/40 dark:fill-white/[0.07]"
-                  />
+                  {/* The track, then the capsule; the rest step back from the one that stands out. */}
+                  <motion.g initial={false} animate={{ opacity: on ? 1 : QUIET }} transition={{ duration: 0.2 }}>
+                    <rect
+                      x={x}
+                      y={trackTop}
+                      width={width}
+                      height={trackHeight}
+                      rx={width / 2}
+                      fill={color}
+                      opacity={TRACK}
+                    />
+                    <motion.rect
+                      x={x}
+                      width={width}
+                      rx={width / 2}
+                      fill={color}
+                      initial={{ y: trackBottom, height: 0 }}
+                      animate={inView ? { y: trackBottom - h, height: h } : { y: trackBottom, height: 0 }}
+                      transition={transition}
+                    />
+                  </motion.g>
                   <text
                     x={centerOf(k)}
                     y={size.height - 6}
@@ -223,7 +182,7 @@ export function CapsuleBarChart<T extends Datum>({
       <motion.div
         ref={tipRef}
         aria-hidden
-        className="pointer-events-none absolute top-0 left-0 rounded-full bg-foreground px-2.5 py-1 text-xs font-medium whitespace-nowrap text-background tabular-nums shadow-md"
+        className="pointer-events-none absolute top-0 left-0 rounded-full bg-foreground px-2.5 py-1 text-xs font-medium whitespace-nowrap text-background tabular-nums"
         style={{ x: pillX, y: pillY }}
         initial={false}
         animate={{ opacity: inView && n > 0 ? 1 : 0 }}

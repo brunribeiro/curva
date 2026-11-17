@@ -199,7 +199,7 @@ import { CapsuleBarChart } from "@/components/ui/capsule-bar-chart"
 <CapsuleBarChart data={days} index="day" value="ticket" label="Average ticket" />
 ```
 
-Glass capsules filled with liquid that rises with a little slosh. One capsule glows in a gradient from `color` up to `accent`: the active one, or the `highlight` (`"max"` by default, `"last"` or an index) while nothing is active. Its value rides on top in a pill.
+Rounded bars on faint tracks, all in one `color`. One capsule stands out at full strength while the rest step back: the active one, or the `highlight` (`"max"` by default, `"last"` or an index) while nothing is active. Its value rides on top in a pill. Capsules grow from the baseline in a left-to-right wave and reshape on a spring when the data changes.
 
 ## Dot matrix chart
 

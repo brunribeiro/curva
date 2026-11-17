@@ -69,7 +69,7 @@ export function TicketCard() {
 
   return (
     <Card>
-      <Header title="Average ticket" text="The busiest day glows; point at any other">
+      <Header title="Average ticket" text="The busiest day stands out; point at any other">
         <Segmented
           label="Meal"
           options={[

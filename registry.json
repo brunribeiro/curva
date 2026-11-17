@@ -375,7 +375,7 @@
       "name": "capsule-bar-chart",
       "type": "registry:ui",
       "title": "Capsule bar chart",
-      "description": "Glass capsules that fill like liquid, with the active one glowing in a gradient.",
+      "description": "Rounded bars on faint tracks in one color. The busiest day stands out while the rest step back, and the value rides above it.",
       "dependencies": [
         "motion"
       ],

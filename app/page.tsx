@@ -120,9 +120,9 @@ export default function Home() {
         </section>
 
         <section className="pt-20">
-          <h2 className="text-2xl font-semibold tracking-tight">Flows, glass and ranges</h2>
+          <h2 className="text-2xl font-semibold tracking-tight">Flows, capsules and ranges</h2>
           <p className="mt-2 max-w-xl text-pretty text-muted-foreground">
-            Bands that flow from stage to stage, capsules that fill like glass, growth drawn in
+            Bands that flow from stage to stage, capsules that single out one day, growth drawn in
             dots, and a histogram you brush to ask about any stretch of time.
           </p>
           <div className="mt-6 max-w-2xl">
