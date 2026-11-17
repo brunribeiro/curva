@@ -5,17 +5,20 @@ import { AnimatePresence, motion } from "motion/react"
 
 import { cn } from "@/lib/utils"
 
+/** Where the registry lives. The command shows this address whichever host serves the page. */
+const REGISTRY = "https://curva.brunoribei.ro"
+
 /** One install command, or a row of chips to pick between several. */
 export function InstallCommand({ items }: { items: readonly string[] }) {
-  const [origin, setOrigin] = React.useState("https://curva.brunoribei.ro")
+  const [origin, setOrigin] = React.useState(REGISTRY)
   const [item, setItem] = React.useState(items[0])
   const [copied, setCopied] = React.useState(false)
-  const command = `npx shadcn@latest add ${origin}/r/${item}.json`
+  const command = `npx shadcn@latest add ${origin}/${item}`
 
   React.useEffect(() => {
-    // The registry is served from wherever this site runs.
+    // While developing, the registry is the dev server itself.
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setOrigin(window.location.origin)
+    if (process.env.NODE_ENV === "development") setOrigin(window.location.origin)
   }, [])
 
   const copy = async () => {
@@ -47,7 +50,9 @@ export function InstallCommand({ items }: { items: readonly string[] }) {
       )}
       <div className="flex items-center gap-2 rounded-xl border bg-card py-1.5 pr-1.5 pl-4 font-mono text-[13px] text-muted-foreground">
         <span className="text-foreground/40 select-none">$</span>
-        <code className="min-w-0 flex-1 truncate">{command}</code>
+        <code className="min-w-0 flex-1 overflow-x-auto whitespace-nowrap [scrollbar-width:none]">
+          {command}
+        </code>
         <button
           onClick={copy}
           className="relative h-8 w-16 shrink-0 rounded-lg bg-muted font-sans text-xs font-medium text-foreground outline-none hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring/50"

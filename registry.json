@@ -4,6 +4,116 @@
   "homepage": "https://github.com/brunribeiro/curva",
   "items": [
     {
+      "name": "all",
+      "type": "registry:ui",
+      "title": "All charts",
+      "description": "Every Curva chart in one install: all 21 components with their shared parts.",
+      "dependencies": [
+        "d3-shape",
+        "motion"
+      ],
+      "devDependencies": [
+        "@types/d3-shape"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "registry/curva/ui/area-chart.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/ui/bar-chart.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/ui/donut-chart.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/ui/radial-chart.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/ui/gauge-chart.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/ui/polar-bar-chart.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/ui/heatmap-chart.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/ui/split-bar.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/ui/flow-chart.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/ui/capsule-bar-chart.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/ui/dot-matrix-chart.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/ui/range-histogram.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/ui/sparkline.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/ui/radar-chart.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/ui/waffle-chart.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/ui/funnel-chart.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/ui/combo-chart.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/ui/status-timeline.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/ui/bar-list.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/ui/dumbbell-chart.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/ui/percentile-chart.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/ui/chart-parts.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/curva/lib/curva.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
       "name": "area-chart",
       "type": "registry:ui",
       "title": "Area chart",

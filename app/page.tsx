@@ -61,8 +61,8 @@ export default function Home() {
             Animated chart components for shadcn/ui. Copy them into your project and own every
             line.
           </p>
-          <div className="mt-8 max-w-xl">
-            <InstallCommand items={["area-chart"]} />
+          <div className="mt-8 max-w-2xl">
+            <InstallCommand items={["all", "area-chart"]} />
           </div>
         </section>
 
@@ -74,7 +74,7 @@ export default function Home() {
             Side by side or stacked. Bars slide to their new slots, grow in from the baseline, and
             restack when a series leaves.
           </p>
-          <div className="mt-6 max-w-xl">
+          <div className="mt-6 max-w-2xl">
             <InstallCommand items={["bar-chart"]} />
           </div>
           <div className="mt-8 grid gap-4 lg:grid-cols-2">
@@ -89,7 +89,7 @@ export default function Home() {
             Parts of a whole and progress toward goals. Rings pour in, segments reshape and make
             room, and the legend and center follow wherever you point.
           </p>
-          <div className="mt-6 max-w-xl">
+          <div className="mt-6 max-w-2xl">
             <InstallCommand items={["donut-chart", "radial-chart"]} />
           </div>
           <div className="mt-8 grid gap-4 lg:grid-cols-2">
@@ -104,7 +104,7 @@ export default function Home() {
             For numbers a line can&apos;t hold: a budget against its limit, the shape of a day, the
             busiest hours of the week, where the money went.
           </p>
-          <div className="mt-6 max-w-xl">
+          <div className="mt-6 max-w-2xl">
             <InstallCommand items={["gauge-chart", "polar-bar-chart", "heatmap-chart", "split-bar"]} />
           </div>
           <div className="mt-8 grid gap-4 lg:grid-cols-2">
@@ -125,7 +125,7 @@ export default function Home() {
             Bands that flow from stage to stage, capsules that fill like glass, growth drawn in
             dots, and a histogram you brush to ask about any stretch of time.
           </p>
-          <div className="mt-6 max-w-xl">
+          <div className="mt-6 max-w-2xl">
             <InstallCommand items={["flow-chart", "capsule-bar-chart", "dot-matrix-chart", "range-histogram"]} />
           </div>
           <div className="mt-8 grid gap-4 lg:grid-cols-2">
@@ -146,7 +146,7 @@ export default function Home() {
             Sparklines that hand their numbers to a headline, a radar for comparing, a waffle for
             dividing and a funnel for converting.
           </p>
-          <div className="mt-6 max-w-xl">
+          <div className="mt-6 max-w-2xl">
             <InstallCommand items={["sparkline", "radar-chart", "waffle-chart", "funnel-chart"]} />
           </div>
           <div className="mt-8 grid gap-4">
@@ -165,7 +165,7 @@ export default function Home() {
             A period against the last with what changed, a day slot by slot, the days a store was
             taking orders, the leaders, the before and after, and how slow the slow end is.
           </p>
-          <div className="mt-6 max-w-xl">
+          <div className="mt-6 max-w-2xl">
             <InstallCommand
               items={["area-chart", "combo-chart", "status-timeline", "bar-list", "dumbbell-chart", "percentile-chart"]}
             />

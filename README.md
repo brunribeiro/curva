@@ -6,30 +6,27 @@ Animated chart components for [shadcn/ui](https://ui.shadcn.com). They install a
 
 ## Install
 
-Curva is a [shadcn registry](https://ui.shadcn.com/docs/registry), so it needs a project already set up with shadcn/ui (a `components.json`). It's built and tested with React 19 and Tailwind CSS v4. Add the charts you want:
+Curva is a [shadcn registry](https://ui.shadcn.com/docs/registry), so it needs a project already set up with shadcn/ui (a `components.json`). It's built and tested with React 19 and Tailwind CSS v4.
+
+Every chart, in one command:
 
 ```bash
-npx shadcn@latest add https://curva.brunoribei.ro/r/area-chart.json
-npx shadcn@latest add https://curva.brunoribei.ro/r/bar-chart.json
-npx shadcn@latest add https://curva.brunoribei.ro/r/donut-chart.json
-npx shadcn@latest add https://curva.brunoribei.ro/r/radial-chart.json
-npx shadcn@latest add https://curva.brunoribei.ro/r/gauge-chart.json
-npx shadcn@latest add https://curva.brunoribei.ro/r/polar-bar-chart.json
-npx shadcn@latest add https://curva.brunoribei.ro/r/heatmap-chart.json
-npx shadcn@latest add https://curva.brunoribei.ro/r/split-bar.json
-npx shadcn@latest add https://curva.brunoribei.ro/r/flow-chart.json
-npx shadcn@latest add https://curva.brunoribei.ro/r/capsule-bar-chart.json
-npx shadcn@latest add https://curva.brunoribei.ro/r/dot-matrix-chart.json
-npx shadcn@latest add https://curva.brunoribei.ro/r/range-histogram.json
-npx shadcn@latest add https://curva.brunoribei.ro/r/sparkline.json
-npx shadcn@latest add https://curva.brunoribei.ro/r/radar-chart.json
-npx shadcn@latest add https://curva.brunoribei.ro/r/waffle-chart.json
-npx shadcn@latest add https://curva.brunoribei.ro/r/funnel-chart.json
-npx shadcn@latest add https://curva.brunoribei.ro/r/combo-chart.json
-npx shadcn@latest add https://curva.brunoribei.ro/r/status-timeline.json
-npx shadcn@latest add https://curva.brunoribei.ro/r/bar-list.json
-npx shadcn@latest add https://curva.brunoribei.ro/r/dumbbell-chart.json
-npx shadcn@latest add https://curva.brunoribei.ro/r/percentile-chart.json
+npx shadcn@latest add https://curva.brunoribei.ro/all
+```
+
+Or only the ones you want, by name:
+
+```bash
+npx shadcn@latest add https://curva.brunoribei.ro/area-chart
+```
+
+The names: `area-chart`, `bar-chart`, `donut-chart`, `radial-chart`, `gauge-chart`, `polar-bar-chart`, `heatmap-chart`, `split-bar`, `flow-chart`, `capsule-bar-chart`, `dot-matrix-chart`, `range-histogram`, `sparkline`, `radar-chart`, `waffle-chart`, `funnel-chart`, `combo-chart`, `status-timeline`, `bar-list`, `dumbbell-chart`, `percentile-chart`.
+
+To use short names, add the registry to your `components.json` once:
+
+```bash
+npx shadcn@latest registry add "@curva=https://curva.brunoribei.ro/r/{name}.json"
+npx shadcn@latest add @curva/area-chart @curva/bar-chart
 ```
 
 Each chart adds its own file to `components/ui/` plus the shared `components/ui/chart-parts.tsx` and `lib/curva.ts`. Every chart depends on `motion`. The area, donut, radial, gauge, polar bar, flow, sparkline, funnel and combo charts also need `d3-shape`.
