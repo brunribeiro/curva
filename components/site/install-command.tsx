@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
 
 /** One install command, or a row of chips to pick between several. */
 export function InstallCommand({ items }: { items: readonly string[] }) {
-  const [origin, setOrigin] = React.useState("https://curva.dev")
+  const [origin, setOrigin] = React.useState("https://curva.brunoribei.ro")
   const [item, setItem] = React.useState(items[0])
   const [copied, setCopied] = React.useState(false)
   const command = `npx shadcn@latest add ${origin}/r/${item}.json`

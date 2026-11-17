@@ -2,30 +2,34 @@
 
 Animated chart components for [shadcn/ui](https://ui.shadcn.com). They install as source you own, read your theme's tokens, and move with your data.
 
+[Live demo](https://curva.brunoribei.ro), with every chart moving.
+
 ## Install
 
+Curva is a [shadcn registry](https://ui.shadcn.com/docs/registry), so it needs a project already set up with shadcn/ui (a `components.json`). It's built and tested with React 19 and Tailwind CSS v4. Add the charts you want:
+
 ```bash
-npx shadcn@latest add <registry-url>/r/area-chart.json
-npx shadcn@latest add <registry-url>/r/bar-chart.json
-npx shadcn@latest add <registry-url>/r/donut-chart.json
-npx shadcn@latest add <registry-url>/r/radial-chart.json
-npx shadcn@latest add <registry-url>/r/gauge-chart.json
-npx shadcn@latest add <registry-url>/r/polar-bar-chart.json
-npx shadcn@latest add <registry-url>/r/heatmap-chart.json
-npx shadcn@latest add <registry-url>/r/split-bar.json
-npx shadcn@latest add <registry-url>/r/flow-chart.json
-npx shadcn@latest add <registry-url>/r/capsule-bar-chart.json
-npx shadcn@latest add <registry-url>/r/dot-matrix-chart.json
-npx shadcn@latest add <registry-url>/r/range-histogram.json
-npx shadcn@latest add <registry-url>/r/sparkline.json
-npx shadcn@latest add <registry-url>/r/radar-chart.json
-npx shadcn@latest add <registry-url>/r/waffle-chart.json
-npx shadcn@latest add <registry-url>/r/funnel-chart.json
-npx shadcn@latest add <registry-url>/r/combo-chart.json
-npx shadcn@latest add <registry-url>/r/status-timeline.json
-npx shadcn@latest add <registry-url>/r/bar-list.json
-npx shadcn@latest add <registry-url>/r/dumbbell-chart.json
-npx shadcn@latest add <registry-url>/r/percentile-chart.json
+npx shadcn@latest add https://curva.brunoribei.ro/r/area-chart.json
+npx shadcn@latest add https://curva.brunoribei.ro/r/bar-chart.json
+npx shadcn@latest add https://curva.brunoribei.ro/r/donut-chart.json
+npx shadcn@latest add https://curva.brunoribei.ro/r/radial-chart.json
+npx shadcn@latest add https://curva.brunoribei.ro/r/gauge-chart.json
+npx shadcn@latest add https://curva.brunoribei.ro/r/polar-bar-chart.json
+npx shadcn@latest add https://curva.brunoribei.ro/r/heatmap-chart.json
+npx shadcn@latest add https://curva.brunoribei.ro/r/split-bar.json
+npx shadcn@latest add https://curva.brunoribei.ro/r/flow-chart.json
+npx shadcn@latest add https://curva.brunoribei.ro/r/capsule-bar-chart.json
+npx shadcn@latest add https://curva.brunoribei.ro/r/dot-matrix-chart.json
+npx shadcn@latest add https://curva.brunoribei.ro/r/range-histogram.json
+npx shadcn@latest add https://curva.brunoribei.ro/r/sparkline.json
+npx shadcn@latest add https://curva.brunoribei.ro/r/radar-chart.json
+npx shadcn@latest add https://curva.brunoribei.ro/r/waffle-chart.json
+npx shadcn@latest add https://curva.brunoribei.ro/r/funnel-chart.json
+npx shadcn@latest add https://curva.brunoribei.ro/r/combo-chart.json
+npx shadcn@latest add https://curva.brunoribei.ro/r/status-timeline.json
+npx shadcn@latest add https://curva.brunoribei.ro/r/bar-list.json
+npx shadcn@latest add https://curva.brunoribei.ro/r/dumbbell-chart.json
+npx shadcn@latest add https://curva.brunoribei.ro/r/percentile-chart.json
 ```
 
 Each chart adds its own file to `components/ui/` plus the shared `components/ui/chart-parts.tsx` and `lib/curva.ts`. Every chart depends on `motion`. The area, donut, radial, gauge, polar bar, flow, sparkline, funnel and combo charts also need `d3-shape`.
@@ -374,9 +378,11 @@ The chart is a focusable group. Arrow keys, Home and End walk the points (lists 
 ## Develop
 
 ```bash
+pnpm install
 pnpm dev             # showcase at localhost:3000
 pnpm registry:build  # writes public/r/*.json
 pnpm typecheck && pnpm lint
+pnpm build           # registry, then the showcase
 ```
 
 Chart sources live in `registry/curva/`. Imports of `@/registry/curva/lib/*` become `@/lib/*` when installed.
